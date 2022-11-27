@@ -31,7 +31,6 @@ extension UIView {
             rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
             widthAnchor.constraint(equalToConstant: width).isActive = true
             heightAnchor.constraint(equalToConstant: height).isActive = true
-            centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         }
     }
     
