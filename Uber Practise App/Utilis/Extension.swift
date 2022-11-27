@@ -23,13 +23,40 @@ extension UIView {
                 height: CGFloat? = nil) {
         
         self.translatesAutoresizingMaskIntoConstraints = false
-        if let top = top, let left = left, let bottom = bottom, let right = right, let width = width, let height = height {
+        
+        // top
+        if let top = top {
             print("Anchor Func from extension is getting called")
             topAnchor.constraint(equalTo: top, constant: paddingTop).isActive = true
+        }
+        
+        // left
+        if let left = left {
+            print("Anchor Func from extension is getting called")
             leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true
+        }
+        
+        // bottom
+        if let bottom = bottom {
+            print("Anchor Func from extension is getting called")
             bottomAnchor.constraint(equalTo: bottom, constant: -paddingBottom).isActive = true
+        }
+        
+        // right
+        if let right = right {
+            print("Anchor Func from extension is getting called")
             rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
+        }
+        
+        // width
+        if let width = width {
+            print("Anchor Func from extension is getting called")
             widthAnchor.constraint(equalToConstant: width).isActive = true
+        }
+        
+        // height
+        if let height = height {
+            print("Anchor Func from extension is getting called")
             heightAnchor.constraint(equalToConstant: height).isActive = true
         }
     }
