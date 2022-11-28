@@ -71,4 +71,46 @@ extension UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
+    
+    func inputContainerView(withImage imageString: String, textField: UITextField) -> UIView {
+        let view = UIView()
+        
+        // Adding Image View
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: imageString)
+//        imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 25)
+        imageView.alpha = 0.8
+        imageView.tintColor = .white
+        view.addSubview(imageView)
+        imageView.customCenterY(inView: view)
+        imageView.customAnchor(left: view.leftAnchor, paddingLeft: 16, width: 23)
+        
+        // Adding TextFieldView
+        view.addSubview(textField)
+        textField.customCenterY(inView: view)
+        textField.customAnchor(left: imageView.rightAnchor, bottom: view.bottomAnchor ,right: view.rightAnchor, paddingLeft: 8, paddingRight: 8)
+        
+        // Adding Separator View
+        let separatorView = UIView()
+        separatorView.backgroundColor = .lightGray
+        view.addSubview(separatorView)
+        separatorView.customAnchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingLeft: 8, paddingRight: 8, height: 0.75)
+        
+        return view
+
+    }
+}
+
+
+extension UITextField {
+    func textField(withPlaceholder placeholder: String, isSecureTextEntry: Bool) -> UITextField {
+        let tf = UITextField()
+        tf.borderStyle = .none
+        tf.font = UIFont.systemFont(ofSize: 16)
+        tf.textColor = .white
+        tf.keyboardAppearance = .dark
+        tf.isSecureTextEntry = isSecureTextEntry
+        tf.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [NSAttributedString.Key.foregroundColor : UIColor.gray])
+        return tf
+    }
 }
