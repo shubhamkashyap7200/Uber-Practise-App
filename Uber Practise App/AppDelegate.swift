@@ -6,11 +6,16 @@
 //
 
 import UIKit
+import Firebase
+import GoogleMaps
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
+        GMSServices.provideAPIKey("AIzaSyB5IZrVK8okjfuKhng-VH5xinHaO8zhfNA")
+        GMSServices.setMetalRendererEnabled(true)
         return true
     }
 

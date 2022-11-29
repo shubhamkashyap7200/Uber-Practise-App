@@ -9,7 +9,7 @@ import UIKit
 import Firebase
 import GoogleMaps
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, GMSMapViewDelegate {
     // MARK: - Properties
     
     
@@ -51,8 +51,17 @@ extension HomeViewController{
     
     // MARK: - Configuring Google Maps
     func setupMapView() {
+        // MARK: - Camera and Mapview
+
         let camera = GMSCameraPosition.camera(withLatitude: -33.87, longitude: 151.8, zoom: 6.0)
         let mapView = GMSMapView.map(withFrame: self.view.frame, camera: camera)
+        mapView.delegate = self
         self.view.addSubview(mapView)
+        
+        // MARK: - Marker
+        let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: -33.87, longitude: 151.8))
+        marker.title = "India"
+        marker.snippet = "Delhi"
+        marker.map = mapView
     }
 }
