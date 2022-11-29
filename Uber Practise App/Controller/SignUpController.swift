@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SignUpController: UIViewController {
     
@@ -67,7 +68,7 @@ class SignUpController: UIViewController {
         let button = AuthButton(type: .system)
         button.setTitle("Sign up", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-
+        button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
         return button
     }()
     
@@ -137,5 +138,45 @@ extension SignUpController {
     
     @objc func handleShowSignUp() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func handleSignUp() {
+        print("Sign up pressed")
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        guard let fullname = fullnameTextField.text else { return }
+        let accountTypeIndex = accountTypeSegmentedControl.selectedSegmentIndex
+        
+        print(email, password)
+        
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            
+            // If we get an error
+            if let error = error {
+                print("DEBUG: Error while creating user ::: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let uid = result?.user.uid else { return }
+            
+            // Creating Data dictionary to be uploaded to firebase storage
+            let values = [
+                "email" : email,
+                "fullname" : fullname,
+                "password" : password,
+                "accountTypeIndex" : accountTypeIndex
+            ]
+            
+            Database.database().reference().child("users").child(uid).updateChildValues(values) { [weak self] error, reference in
+                if let error = error {
+                    print("DEBUG: Error while uploading data to storage ::: \(error.localizedDescription)")
+                    return
+                }
+                
+                print("Successfully registered and save data")
+                self?.dismiss(animated: true, completion: nil)
+
+            }
+        }
     }
 }

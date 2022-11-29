@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import Firebase
+import GoogleMaps
 
 class LoginController: UIViewController {
     // MARK: - Properties
@@ -48,7 +50,7 @@ class LoginController: UIViewController {
         let button = AuthButton(type: .system)
         button.setTitle("Login", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-
+        button.addTarget(self, action: #selector(handleLoginLogic), for: .touchUpInside)
         return button
     }()
     
@@ -96,6 +98,27 @@ extension LoginController {
         navigationController?.pushViewController(controller, animated: true)
     }
     
+    @objc func handleLoginLogic() {
+        print("Login Button Pressed")
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
+            if let error = error {
+                print("DEBUG: Error while signing the user ::: \(error)")
+                return
+            }
+            
+            print("Succesfully signed the user in")
+            DispatchQueue.main.async {
+//                self?.navigationController?.popViewController(animated: true)
+                let homeController = HomeViewController()
+                self?.navigationController?.pushViewController(homeController, animated: true)
+//                self?.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
     // MARK: - Helper Functions
     func configureUI() {
         configureNavigationBar()
@@ -120,4 +143,6 @@ extension LoginController {
         navigationController?.navigationBar.isHidden = true
         navigationController?.navigationBar.barStyle = .black
     }
+    
+    
 }
