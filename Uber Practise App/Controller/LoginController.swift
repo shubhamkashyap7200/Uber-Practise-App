@@ -110,11 +110,11 @@ extension LoginController {
             }
             
             print("Succesfully signed the user in")
+            
             DispatchQueue.main.async {
-//                self?.navigationController?.popViewController(animated: true)
                 let homeController = HomeViewController()
+//                homeController.checkIfUserIsLoggedIn()
                 self?.navigationController?.pushViewController(homeController, animated: true)
-//                self?.dismiss(animated: true, completion: nil)
             }
         }
     }

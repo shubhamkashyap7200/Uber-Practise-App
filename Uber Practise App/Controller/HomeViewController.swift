@@ -17,7 +17,7 @@ class HomeViewController: UIViewController, GMSMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        signOut()
-        setupMapView()
+        checkIfUserIsLoggedIn()
     }
 }
 
@@ -36,6 +36,7 @@ extension HomeViewController{
         else {
             print("DEBUG: User is LOGGED in...")
             print("DEBUG: User id is ::: \(currentUser?.uid)")
+            setupMapView()
         }
     }
     
