@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  SignUpController.swift
 //  Uber Practise App
 //
 //  Created by Shubham on 11/28/22.
@@ -7,15 +7,15 @@
 
 import UIKit
 
-class LoginController: UIViewController {
-    // MARK: - Properties
+class SignUpController: UIViewController {
     
+    // MARK: - Properties
     // Company label
     private let companyTitleLabel: UILabel = { () -> UILabel in
         let label = UILabel()
         label.text = "UBER"
         label.font = UIFont(name: "Avenir-Light", size: 36)
-        label.textColor = UIColor(white: 1, alpha: 0.8)
+        label.textColor = UIColor(white: 1, alpha: 0.87)
         return label
     }()
     
@@ -26,16 +26,35 @@ class LoginController: UIViewController {
         return view
     }()
     
+    // Full name Container view // lazy means it will only be called when needed and will not hangout in memory
+    private lazy var fullnameContainerView: UIView = { () -> UIView in
+        let view = UIView().inputContainerView(withImage: "person", textField: fullnameTextField)
+        view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return view
+    }()
+    
     private lazy var passwordContainerView: UIView = { () -> UIView in
         let view = UIView().inputContainerView(withImage: "lock", textField: passwordTextField)
         view.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return view
     }()
     
+    private lazy var accountTypeContainerView: UIView = { () -> UIView in
+        let view = UIView().inputContainerView(withImage: "person.crop.square", sc: accountTypeSegmentedControl)
+        view.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        return view
+    }()
+
+    
     //  Textfield container view
     // Email
     private let emailTextField: UITextField = { () -> UITextField in
         return UITextField().textField(withPlaceholder: "Email", isSecureTextEntry: false)
+    }()
+    
+    // Full name
+    private let fullnameTextField: UITextField = { () -> UITextField in
+        return UITextField().textField(withPlaceholder: "Full Name", isSecureTextEntry: false)
     }()
     
     // Password
@@ -44,24 +63,35 @@ class LoginController: UIViewController {
     }()
     
     // login Button
-    private let loginButton: AuthButton = { () -> AuthButton in
+    private let signUpButton: AuthButton = { () -> AuthButton in
         let button = AuthButton(type: .system)
-        button.setTitle("Login", for: .normal)
+        button.setTitle("Sign up", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
 
         return button
     }()
     
-    // Signup button
-    private let signupButton: UIButton = { () -> UIButton in
+    private let accountTypeSegmentedControl: UISegmentedControl = { () -> UISegmentedControl in
+        let sc = UISegmentedControl(items: ["Rider", "Driver"])
+        sc.backgroundColor = .backgroundColor
+        sc.tintColor = UIColor(white: 0.87, alpha: 1.0)
+        sc.selectedSegmentIndex = 0
+        sc.selectedSegmentTintColor = .white
+        sc.layer.borderColor = UIColor.white.withAlphaComponent(0.87).cgColor
+        sc.layer.borderWidth = 0.5
+        return sc
+    }()
+    
+    // SignIn button
+    private let signInButton: UIButton = { () -> UIButton in
         let button = UIButton(type: .system)
         
-        let attributedTitle = NSMutableAttributedString(string: "Don't have an account?  ", attributes: [
+        let attributedTitle = NSMutableAttributedString(string: "Already have an account?  ", attributes: [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16),
             NSAttributedString.Key.foregroundColor: UIColor.lightGray
         ])
         
-        attributedTitle.append(NSAttributedString(string: "Sign up", attributes: [
+        attributedTitle.append(NSAttributedString(string: "Sign In", attributes: [
             NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16),
             NSAttributedString.Key.foregroundColor: UIColor.mainBlueTintColor
         ]))
@@ -70,35 +100,24 @@ class LoginController: UIViewController {
         button.addTarget(self, action: #selector(handleShowSignUp), for: .touchUpInside)
         return button
     }()
+
+
     
-    // MARK: - Life cycle functions
+    // MARK: - Lifecycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
         configureUI()
     }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        get {
-            return .lightContent
-        }
-    }
 }
 
+
 // MARK: - Custom Functions
-extension LoginController {
-    
+extension SignUpController {
     // MARK: - Selectors
-    @objc func handleShowSignUp() {
-        print("Attempting to push controller")
-        let controller = SignUpController()
-        navigationController?.pushViewController(controller, animated: true)
-    }
     
     // MARK: - Helper Functions
     func configureUI() {
-        configureNavigationBar()
 
         view.backgroundColor = .backgroundColor
         view.addSubview(companyTitleLabel)
@@ -107,7 +126,7 @@ extension LoginController {
         companyTitleLabel.customAnchor(top: view.safeAreaLayoutGuide.topAnchor)
         companyTitleLabel.customCenterX(inView: view)
                 
-        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, loginButton, signupButton])
+        let stack = UIStackView(arrangedSubviews: [emailContainerView, fullnameContainerView, passwordContainerView, accountTypeContainerView ,signUpButton, signInButton])
         stack.axis = .vertical
         stack.distribution = .fillEqually
         stack.spacing = 20
@@ -116,8 +135,7 @@ extension LoginController {
         stack.customAnchor(top: companyTitleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 40, paddingLeft: 16, paddingRight: 16)
     }
     
-    func configureNavigationBar() {
-        navigationController?.navigationBar.isHidden = true
-        navigationController?.navigationBar.barStyle = .black
+    @objc func handleShowSignUp() {
+        navigationController?.popViewController(animated: true)
     }
 }

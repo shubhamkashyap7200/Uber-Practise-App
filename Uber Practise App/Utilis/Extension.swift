@@ -67,28 +67,40 @@ extension UIView {
         centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
     
-    func customCenterY(inView view: UIView) {
+    func customCenterY(inView view: UIView, constant: CGFloat = 0.0) {
         self.translatesAutoresizingMaskIntoConstraints = false
-        centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
     }
     
-    func inputContainerView(withImage imageString: String, textField: UITextField) -> UIView {
+    func inputContainerView(withImage imageString: String, textField: UITextField? = nil, sc: UISegmentedControl? = nil) -> UIView {
         let view = UIView()
         
         // Adding Image View
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: imageString)
-//        imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 25)
+        // imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 25)
         imageView.alpha = 0.8
         imageView.tintColor = .white
         view.addSubview(imageView)
-        imageView.customCenterY(inView: view)
-        imageView.customAnchor(left: view.leftAnchor, paddingLeft: 16, width: 23)
         
         // Adding TextFieldView
-        view.addSubview(textField)
-        textField.customCenterY(inView: view)
-        textField.customAnchor(left: imageView.rightAnchor, bottom: view.bottomAnchor ,right: view.rightAnchor, paddingLeft: 8, paddingRight: 8)
+        if let textField = textField {
+            imageView.customCenterY(inView: view)
+            imageView.customAnchor(left: view.leftAnchor, paddingLeft: 16, width: 23)
+
+            view.addSubview(textField)
+            textField.customCenterY(inView: view)
+            textField.customAnchor(left: imageView.rightAnchor, bottom: view.bottomAnchor ,right: view.rightAnchor, paddingLeft: 8, paddingRight: 8)
+        }
+        
+        // Adding the segmented controller
+        if let sc = sc {
+            imageView.customAnchor(top: view.topAnchor, left: view.leftAnchor, paddingTop: -8 ,paddingLeft: 8, width: 24, height: 24)
+            
+            view.addSubview(sc)
+            sc.customAnchor(left: view.leftAnchor, right: view.rightAnchor, paddingLeft: 8, paddingRight: 8)
+            sc.customCenterY(inView: view, constant: 16)
+        }
         
         // Adding Separator View
         let separatorView = UIView()
@@ -113,4 +125,13 @@ extension UITextField {
         tf.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [NSAttributedString.Key.foregroundColor : UIColor.gray])
         return tf
     }
+}
+
+extension UIColor {
+    static func rbg(red: CGFloat, green: CGFloat, blue: CGFloat) -> UIColor {
+        return UIColor.init(red: red/255, green: green/255, blue: blue/255, alpha: 1.0)
+    }
+    
+    static let backgroundColor = UIColor.rbg(red: 25, green: 25, blue: 25)
+    static let mainBlueTintColor = UIColor.rbg(red: 17, green: 154, blue: 237)
 }
