@@ -11,7 +11,6 @@
 		5123ECA72933F0C7002735C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5123ECA62933F0C7002735C4 /* AppDelegate.swift */; };
 		5123ECA92933F0C7002735C4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5123ECA82933F0C7002735C4 /* SceneDelegate.swift */; };
 		5123ECB02933F0C7002735C4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5123ECAF2933F0C7002735C4 /* Assets.xcassets */; };
-		5123ECB32933F0C7002735C4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5123ECB12933F0C7002735C4 /* LaunchScreen.storyboard */; };
 		5123ECC42933F2C6002735C4 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5123ECC32933F2C6002735C4 /* LoginController.swift */; };
 		5123ECC62933FB30002735C4 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5123ECC52933FB30002735C4 /* Extension.swift */; };
 		51728EAB2936801D002772FB /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51728EAA2936801D002772FB /* HomeViewController.swift */; };
@@ -31,7 +30,6 @@
 		5123ECA62933F0C7002735C4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5123ECA82933F0C7002735C4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		5123ECAF2933F0C7002735C4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		5123ECB22933F0C7002735C4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5123ECB42933F0C7002735C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5123ECC32933F2C6002735C4 /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		5123ECC52933FB30002735C4 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
@@ -86,7 +84,6 @@
 				5123ECA62933F0C7002735C4 /* AppDelegate.swift */,
 				5123ECA82933F0C7002735C4 /* SceneDelegate.swift */,
 				5123ECAF2933F0C7002735C4 /* Assets.xcassets */,
-				5123ECB12933F0C7002735C4 /* LaunchScreen.storyboard */,
 				5123ECB42933F0C7002735C4 /* Info.plist */,
 			);
 			path = "Uber Practise App";
@@ -217,7 +214,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5123ECB32933F0C7002735C4 /* LaunchScreen.storyboard in Resources */,
 				5123ECB02933F0C7002735C4 /* Assets.xcassets in Resources */,
 				518AC3C6293686060006D45A /* GoogleService-Info.plist in Resources */,
 			);
@@ -283,17 +279,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		5123ECB12933F0C7002735C4 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5123ECB22933F0C7002735C4 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		5123ECB52933F0C7002735C4 /* Debug */ = {
@@ -421,7 +406,9 @@
 				DEVELOPMENT_TEAM = 43L658SZQH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Uber Practise App/Info.plist";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Hello we want to get your location";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We want your location";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We want your location";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We want your location";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -450,7 +437,9 @@
 				DEVELOPMENT_TEAM = 43L658SZQH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Uber Practise App/Info.plist";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Hello we want to get your location";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We want your location";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We want your location";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We want your location";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

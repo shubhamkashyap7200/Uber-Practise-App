@@ -11,7 +11,7 @@ import GoogleMaps
 
 class HomeViewController: UIViewController, GMSMapViewDelegate {
     // MARK: - Properties
-    
+    let locationManager = CLLocationManager()
     
     // MARK: - Life cycle functions
     override func viewDidLoad() {
@@ -53,16 +53,58 @@ extension HomeViewController{
     // MARK: - Configuring Google Maps
     func setupMapView() {
         // MARK: - Camera and Mapview
+        enableLocationServices()
 
         let camera = GMSCameraPosition.camera(withLatitude: -33.87, longitude: 151.8, zoom: 6.0)
         let mapView = GMSMapView.map(withFrame: self.view.frame, camera: camera)
         mapView.delegate = self
         self.view.addSubview(mapView)
+    }
+}
+
+
+// MARK: - Location Manager
+extension HomeViewController: CLLocationManagerDelegate {
+    // MARK: - Location Manager
+    func enableLocationServices() {
+        locationManager.delegate = self
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            print("DEBUG: Some error while getting location")
+            locationManager.requestWhenInUseAuthorization()
+        case .restricted:
+            print("DEBUG: Some error while getting location as it is restricted")
+        case .denied:
+            print("DEBUG: Location is denied")
+        case .authorizedAlways:
+            print("DEBUG: Location is working always")
+            locationManager.startUpdatingLocation()
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        case .authorizedWhenInUse:
+            print("DEBUG: Location is working while in usage")
+        default:
+            print("DEBUG: Some error")
+        }
+    }
+
+    
+    // MARK: - Location Delegates
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if locationManager.authorizationStatus == .authorizedWhenInUse {
+            // Asking for always location
+            locationManager.requestAlwaysAuthorization()
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
         
-        // MARK: - Marker
-        let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: -33.87, longitude: 151.8))
-        marker.title = "India"
-        marker.snippet = "Delhi"
-        marker.map = mapView
+        if let latitude = location?.coordinate.latitude, let longitude = location?.coordinate.longitude {
+            let camera = GMSCameraPosition(latitude: latitude, longitude: longitude, zoom: 17.0)
+            let mapView = GMSMapView.map(withFrame: self.view.frame, camera: camera)
+            mapView.animate(to: camera)
+            locationManager.stopUpdatingLocation()
+        }
     }
 }
