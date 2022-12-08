@@ -12,12 +12,14 @@ import FirebaseAuth
 
 private let reuseIdentifier: String = "Location Cell"
 
-class HomeViewController: UIViewController, GMSMapViewDelegate {
+class HomeViewController: UIViewController {
     // MARK: - Properties
     private let locationManager = LocationHandler.shared.locationManager
     var mapView: GMSMapView!
-    var marker = GMSMarker()
+    fileprivate var locationMarker : GMSMarker? = GMSMarker()
+
     //    var location: CLLocation!
+    
     
     private let tableView = UITableView()
     private final let locationInputViewHeight: CGFloat = 200.0
@@ -46,6 +48,8 @@ class HomeViewController: UIViewController, GMSMapViewDelegate {
         super.viewDidLoad()
         
         checkIfUserIsLoggedIn()
+        fetchUserData()
+        fetchDrivers()
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         view.addGestureRecognizer(tap)
@@ -57,9 +61,32 @@ extension HomeViewController{
     // MARK: - API
     
     func fetchUserData() {
-        Service.shared.fetchUserData { (user) in
+        guard let uid = Auth.auth().currentUser?.uid else { print("Current uid is nil"); return }
+        Service.shared.fetchUserData(uid: uid) { (user) in
             self.user = user
         }
+    }
+    
+    func fetchDrivers() {
+        var driverArray: [User] = []
+        
+        guard let location = locationManager?.location else { print("Location is nil"); return }
+        Service.shared.fetchDrivers(location: location) { (driver) in
+            print("DEBUG:: \(driver.fullname)")
+            driverArray.append(driver)
+            
+            // MARK: - Adding Markers
+            print("DEBUG:: Driver Array count in \(driverArray.count)")
+            for driver in driverArray {
+                print("1")
+                guard let location = driver.location?.coordinate else { print("Nil value here"); return }
+                let driverMarker = DriverMarker(uid: driver.uid)
+                driverMarker.position = location
+                driverMarker.map = self.mapView
+            }
+
+        }
+        
     }
     
     func checkIfUserIsLoggedIn() {
@@ -79,7 +106,6 @@ extension HomeViewController{
             print("DEBUG: User is LOGGED in...")
             print("DEBUG: User id is ::: \(currentUser?.uid)")
             configureUI()
-            fetchUserData()
         }
     }
     
@@ -249,3 +275,17 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 }
+
+// MARK: - Google Maps Delegate
+extension HomeViewController: GMSMapViewDelegate {
+//    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
+//        // MARK: - Location marker is nil check
+//        if locationMarker != nil {
+//            guard let location = locationMarker?.position else { print("Location marker is nil"); return }
+//
+//            mapView.center = mapView.projection.point(for: location)
+//            mapView.center.y = mapView.center.y - 100
+//        }
+//    }
+}
+

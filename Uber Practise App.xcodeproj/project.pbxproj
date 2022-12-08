@@ -17,6 +17,7 @@
 		513EADB1293EFB9100776586 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513EADB0293EFB9100776586 /* User.swift */; };
 		513EADB3293F136500776586 /* LocationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513EADB2293F136500776586 /* LocationHandler.swift */; };
 		51728EAB2936801D002772FB /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51728EAA2936801D002772FB /* HomeViewController.swift */; };
+		5189A027294214AF00133FB2 /* DriverMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5189A026294214AF00133FB2 /* DriverMarker.swift */; };
 		518AC3C6293686060006D45A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 518AC3C5293686060006D45A /* GoogleService-Info.plist */; };
 		51915B31293E559D00B1FF15 /* LocationInputActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51915B30293E559D00B1FF15 /* LocationInputActivationView.swift */; };
 		51915B33293E63B500B1FF15 /* LocationInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51915B32293E63B500B1FF15 /* LocationInputView.swift */; };
@@ -40,6 +41,7 @@
 		513EADB0293EFB9100776586 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		513EADB2293F136500776586 /* LocationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHandler.swift; sourceTree = "<group>"; };
 		51728EAA2936801D002772FB /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		5189A026294214AF00133FB2 /* DriverMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverMarker.swift; sourceTree = "<group>"; };
 		518AC3C5293686060006D45A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		51915B30293E559D00B1FF15 /* LocationInputActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInputActivationView.swift; sourceTree = "<group>"; };
 		51915B32293E63B500B1FF15 /* LocationInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInputView.swift; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				513EADB0293EFB9100776586 /* User.swift */,
+				5189A026294214AF00133FB2 /* DriverMarker.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -294,6 +297,7 @@
 				51E74E6C29365A01009A2105 /* AuthButton.swift in Sources */,
 				5123ECA72933F0C7002735C4 /* AppDelegate.swift in Sources */,
 				51915B33293E63B500B1FF15 /* LocationInputView.swift in Sources */,
+				5189A027294214AF00133FB2 /* DriverMarker.swift in Sources */,
 				5123ECC42933F2C6002735C4 /* LoginController.swift in Sources */,
 				5123ECA92933F0C7002735C4 /* SceneDelegate.swift in Sources */,
 				51931CB3293EE60900169E24 /* LocationCell.swift in Sources */,

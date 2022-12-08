@@ -115,7 +115,7 @@ class SignUpController: UIViewController {
         configureUI()
         
         let sharedLocationManager = LocationHandler.shared.locationManager
-        print("Locaiton is this \(sharedLocationManager?.location)")
+        print("Location is this \(sharedLocationManager?.location)")
 
     }
 }
@@ -179,6 +179,7 @@ extension SignUpController {
             if accountTypeIndex == 1 {
                 guard let location = self?.location else { print("DEBUG:: Location is nil from guard statement"); return }
                 let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATION)
+                
                 geofire.setLocation(location, forKey: uid) { (error) in
                     self?.uploadUserDataAndDismiss(uid: uid, values: values)
                 }
@@ -191,15 +192,10 @@ extension SignUpController {
     
     // MARK: - Updating the child values
     func uploadUserDataAndDismiss(uid: String, values: [String : Any]) {
-        REF_USERS.child(uid).updateChildValues(values) { [weak self] error, reference in
-            if let error = error {
-                print("DEBUG: Error while uploading data to storage ::: \(error.localizedDescription)")
-                return
-            }
-            
-            print("Successfully registered and save data")
-            self?.dismiss(animated: true, completion: nil)
-
-        }
+        REF_USERS.child(uid).updateChildValues(values, withCompletionBlock: { (err, ref) in
+            guard let controller = UIApplication.shared.keyWindow?.rootViewController as? HomeViewController else { return }
+            controller.configureUI()
+            self.dismiss(animated: true, completion: nil)
+        })
     }
 }
