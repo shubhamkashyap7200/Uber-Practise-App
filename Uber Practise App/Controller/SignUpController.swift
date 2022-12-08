@@ -7,10 +7,14 @@
 
 import UIKit
 import Firebase
+import GeoFire
+import FirebaseAuth
 
 class SignUpController: UIViewController {
     
     // MARK: - Properties
+    private var location = LocationHandler.shared.locationManager.location
+    
     // Company label
     private let companyTitleLabel: UILabel = { () -> UILabel in
         let label = UILabel()
@@ -109,6 +113,10 @@ class SignUpController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        
+        let sharedLocationManager = LocationHandler.shared.locationManager
+        print("Locaiton is this \(sharedLocationManager?.location)")
+
     }
 }
 
@@ -149,7 +157,7 @@ extension SignUpController {
         
         print(email, password)
         
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
             
             // If we get an error
             if let error = error {
@@ -160,23 +168,38 @@ extension SignUpController {
             guard let uid = result?.user.uid else { return }
             
             // Creating Data dictionary to be uploaded to firebase storage
-            let values = [
+            let values: [String : Any] = [
                 "email" : email,
                 "fullname" : fullname,
                 "password" : password,
                 "accountTypeIndex" : accountTypeIndex
             ]
             
-            Database.database().reference().child("users").child(uid).updateChildValues(values) { [weak self] error, reference in
-                if let error = error {
-                    print("DEBUG: Error while uploading data to storage ::: \(error.localizedDescription)")
-                    return
+            // MARK: - Geofire
+            if accountTypeIndex == 1 {
+                guard let location = self?.location else { return }
+                let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATION)
+                geofire.setLocation(location, forKey: uid) { (error) in
+                    self?.uploadUserDataAndDismiss(uid: uid, values: values)
                 }
-                
-                print("Successfully registered and save data")
-                self?.dismiss(animated: true, completion: nil)
-
             }
+            
+            //
+            self?.uploadUserDataAndDismiss(uid: uid, values: values)
+        }
+    }
+    
+    // MARK: - Updating the child values
+    func uploadUserDataAndDismiss(uid: String, values: [String : Any]) {
+        REF_USERS.child(uid).updateChildValues(values) { [weak self] error, reference in
+            if let error = error {
+                print("DEBUG: Error while uploading data to storage ::: \(error.localizedDescription)")
+                return
+            }
+            
+            print("Successfully registered and save data")
+            self?.dismiss(animated: true, completion: nil)
+
         }
     }
 }

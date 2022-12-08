@@ -67,9 +67,13 @@ extension UIView {
         centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
     
-    func customCenterY(inView view: UIView, constant: CGFloat = 0.0) {
+    func customCenterY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil, paddingLeft: CGFloat = 0.0 ,constant: CGFloat = 0.0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
+        
+        if let left = leftAnchor {
+            customAnchor(left: left, paddingLeft: paddingLeft)
+        }
     }
     
     func inputContainerView(withImage imageString: String, textField: UITextField? = nil, sc: UISegmentedControl? = nil) -> UIView {
@@ -109,7 +113,33 @@ extension UIView {
         separatorView.customAnchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingLeft: 8, paddingRight: 8, height: 0.75)
         
         return view
-
+    }
+    
+    
+    func setDimensions(height: CGFloat, width: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: height).isActive = true
+        widthAnchor.constraint(equalToConstant: width).isActive = true
+    }
+    
+    // MARK: - Add blur to view
+    
+    func addBlurToView(style: UIBlurEffect.Style) {
+        let blurEffect = UIBlurEffect(style: style)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = self.bounds
+        blurEffectView.layer.masksToBounds = true
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(blurEffectView)
+    }
+    
+    func addShadow() {
+        layer.shadowRadius = 15.0
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.2
+        layer.shadowOffset = CGSize(width: 0.1, height: 0.1)
+        layer.cornerRadius = 10
+        layer.masksToBounds = true
     }
 }
 

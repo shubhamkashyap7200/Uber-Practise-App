@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import GoogleMaps
+import FirebaseAuth
 
 class LoginController: UIViewController {
     // MARK: - Properties
@@ -99,7 +100,6 @@ extension LoginController {
     }
     
     @objc func handleLoginLogic() {
-        print("Login Button Pressed")
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
         
@@ -113,7 +113,6 @@ extension LoginController {
             
             DispatchQueue.main.async {
                 let homeController = HomeViewController()
-//                homeController.checkIfUserIsLoggedIn()
                 self?.navigationController?.pushViewController(homeController, animated: true)
             }
         }
