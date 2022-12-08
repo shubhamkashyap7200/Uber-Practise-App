@@ -114,7 +114,9 @@ extension LoginController {
             
             DispatchQueue.main.async {
                 let homeController = HomeViewController()
-                self?.navigationController?.pushViewController(homeController, animated: true)
+                homeController.configureAll()
+                self?.dismiss(animated: true, completion: nil)
+//                self?.navigationController?.pushViewController(homeController, animated: true)
             }
         }
     }

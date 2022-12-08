@@ -194,7 +194,7 @@ extension SignUpController {
     func uploadUserDataAndDismiss(uid: String, values: [String : Any]) {
         REF_USERS.child(uid).updateChildValues(values, withCompletionBlock: { (err, ref) in
             guard let controller = UIApplication.shared.keyWindow?.rootViewController as? HomeViewController else { return }
-            controller.configureUI()
+            controller.configureAll()
             self.dismiss(animated: true, completion: nil)
         })
     }

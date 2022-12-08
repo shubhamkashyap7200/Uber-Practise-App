@@ -9,14 +9,14 @@ import UIKit
 
 class LocationCell: UITableViewCell {
     // MARK: - Properties
-    private let titleLabel: UILabel = { () -> UILabel in
+    let titleLabel: UILabel = { () -> UILabel in
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14.0)
         label.text = "567 Grove Street"
         return label
     }()
 
-    private let subtitleLabel: UILabel = { () -> UILabel in
+    let subtitleLabel: UILabel = { () -> UILabel in
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14.0)
         label.textColor = .lightGray

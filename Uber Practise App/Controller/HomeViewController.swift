@@ -9,6 +9,8 @@ import UIKit
 import Firebase
 import GoogleMaps
 import FirebaseAuth
+import GooglePlaces
+import MapKit
 
 private let reuseIdentifier: String = "Location Cell"
 
@@ -17,6 +19,7 @@ class HomeViewController: UIViewController {
     private let locationManager = LocationHandler.shared.locationManager
     var mapView: GMSMapView!
     fileprivate var locationMarker : GMSMarker? = GMSMarker()
+    var searchResults: [Any] = []
 
     //    var location: CLLocation!
     
@@ -48,8 +51,6 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         checkIfUserIsLoggedIn()
-        fetchUserData()
-        fetchDrivers()
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         view.addGestureRecognizer(tap)
@@ -69,6 +70,7 @@ extension HomeViewController{
     
     func fetchDrivers() {
         var driverArray: [DriverMarker] = []
+//        var bounds = GMSCoordinateBounds()
         
         guard let location = locationManager?.location else { print("Location is nil"); return }
         Service.shared.fetchDrivers(location: location) { (driver) in
@@ -97,9 +99,14 @@ extension HomeViewController{
             
             if !driverIsVisible {
                 driverArray.append(driverMarker)
+//                bounds = bounds.includingCoordinate(driverMarker.position)
                 driverMarker.map = self.mapView
             }
         }
+        
+//        let update = GMSCameraUpdate.fit(bounds, withPadding: 5.0)
+//        mapView.animate(with: update)
+//        mapView.setMinZoom(1, maxZoom: 20)
     }
     
     func checkIfUserIsLoggedIn() {
@@ -118,8 +125,14 @@ extension HomeViewController{
         else {
             print("DEBUG: User is LOGGED in...")
             print("DEBUG: User id is ::: \(currentUser?.uid)")
-            configureUI()
+            configureAll()
         }
+    }
+    
+    func configureAll() {
+        configureUI()
+        fetchUserData()
+        fetchDrivers()
     }
     
     func signOut() {
@@ -249,6 +262,15 @@ extension HomeViewController: LocationInputActivationViewDelegate {
 
 // MARK: - Location Input View
 extension HomeViewController: LocationInputViewDelegate {
+    // MARK: - Search Query Function
+    func executeSearch(query: String) {
+        print("DEBUG:: Query is here \(query)")
+        searchBy(naturalLanaguageQuery: query) { (results) in
+            self.searchResults = results
+            self.tableView.reloadData()
+        }
+    }
+    
     func dismissLocationInputView() {
         dismissKeyboard()
         UIView.animate(withDuration: 0.3) {
@@ -277,12 +299,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (section == 0) ? 2 : 5
+        return (section == 0) ? 2 : searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! LocationCell
-        
+        if searchResults.isEmpty == false {
+            cell.titleLabel.text = searchResults[0] as! String
+            cell.subtitleLabel.text = searchResults[1] as! String
+        }
         
         return cell
     }
@@ -290,5 +315,31 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - Google Maps Delegate
 extension HomeViewController: GMSMapViewDelegate {
+//    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
+//        mapView.animate(toLocation: (locationManager?.location!.coordinate)!)
+//    }
+}
+
+
+// MARK: - Map Helper functions
+private extension HomeViewController {
+    func searchBy(naturalLanaguageQuery: String, completion: @escaping ([Any]) -> Void) {
+        var results = [Any]()
+        let request = MKLocalSearch.Request()
+        request.region = MKCoordinateRegion(center: (locationManager?.location!.coordinate)!, latitudinalMeters: CLLocationDistance(floatLiteral: 5.0), longitudinalMeters: CLLocationDistance(floatLiteral: 5.0))
+        request.naturalLanguageQuery = naturalLanaguageQuery
+        
+        let search = MKLocalSearch(request: request)
+        search.start { (response, error) in
+            guard let response = response else { return }
+            
+            response.mapItems.forEach { item in
+                results.append(item.placemark.name ?? "No Data")
+                results.append(item.placemark.title ?? "NOOO DATA")
+                results.append(item.placemark.location)
+            }
+            completion(results)
+        }
+    }
 }
 

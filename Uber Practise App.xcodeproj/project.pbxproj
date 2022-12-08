@@ -22,6 +22,7 @@
 		51915B31293E559D00B1FF15 /* LocationInputActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51915B30293E559D00B1FF15 /* LocationInputActivationView.swift */; };
 		51915B33293E63B500B1FF15 /* LocationInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51915B32293E63B500B1FF15 /* LocationInputView.swift */; };
 		51931CB3293EE60900169E24 /* LocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51931CB2293EE60900169E24 /* LocationCell.swift */; };
+		51CF1285294259CF00FF3C36 /* SearchQueryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CF1284294259CF00FF3C36 /* SearchQueryResult.swift */; };
 		51E74E6C29365A01009A2105 /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E74E6B29365A01009A2105 /* AuthButton.swift */; };
 		51FACDEB2935271700A0D5FC /* SignUpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FACDEA2935271700A0D5FC /* SignUpController.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +47,7 @@
 		51915B30293E559D00B1FF15 /* LocationInputActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInputActivationView.swift; sourceTree = "<group>"; };
 		51915B32293E63B500B1FF15 /* LocationInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInputView.swift; sourceTree = "<group>"; };
 		51931CB2293EE60900169E24 /* LocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationCell.swift; sourceTree = "<group>"; };
+		51CF1284294259CF00FF3C36 /* SearchQueryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchQueryResult.swift; sourceTree = "<group>"; };
 		51E74E6B29365A01009A2105 /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		51FACDEA2935271700A0D5FC /* SignUpController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -140,6 +142,7 @@
 			children = (
 				513EADB0293EFB9100776586 /* User.swift */,
 				5189A026294214AF00133FB2 /* DriverMarker.swift */,
+				51CF1284294259CF00FF3C36 /* SearchQueryResult.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				51728EAB2936801D002772FB /* HomeViewController.swift in Sources */,
 				513EADB1293EFB9100776586 /* User.swift in Sources */,
 				513EADAF293EF1F100776586 /* Service.swift in Sources */,
+				51CF1285294259CF00FF3C36 /* SearchQueryResult.swift in Sources */,
 				51915B31293E559D00B1FF15 /* LocationInputActivationView.swift in Sources */,
 				5123ECC62933FB30002735C4 /* Extension.swift in Sources */,
 			);
