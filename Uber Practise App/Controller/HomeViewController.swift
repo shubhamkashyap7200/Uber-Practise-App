@@ -17,7 +17,8 @@ class HomeViewController: UIViewController, GMSMapViewDelegate {
     private let locationManager = LocationHandler.shared.locationManager
     var mapView: GMSMapView!
     var marker = GMSMarker()
-    var location: CLLocation!
+    //    var location: CLLocation!
+    
     private let tableView = UITableView()
     private final let locationInputViewHeight: CGFloat = 200.0
     private var user: User? {
@@ -38,14 +39,13 @@ class HomeViewController: UIViewController, GMSMapViewDelegate {
     // MARK: - Indicator View
     private let inputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
-
+    
     
     // MARK: - Life cycle functions
     override func viewDidLoad() {
         super.viewDidLoad()
-//        signOut()
+        
         checkIfUserIsLoggedIn()
-        fetchUserData()
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         view.addGestureRecognizer(tap)
@@ -61,21 +61,25 @@ extension HomeViewController{
             self.user = user
         }
     }
-
+    
     func checkIfUserIsLoggedIn() {
         let currentUser = Auth.auth().currentUser // Getting current user
         if currentUser?.uid == nil {
             // Navigating to login controller
-            let navLogin = UINavigationController(rootViewController: LoginController())
-            navLogin.modalTransitionStyle = .partialCurl
-            navLogin.modalPresentationStyle = .fullScreen
-            present(navLogin, animated: true)
-            print("DEBUG: User not logged in...")
+            DispatchQueue.main.async {
+                let nav = UINavigationController(rootViewController: LoginController())
+                if #available(iOS 13.0, *) {
+                    nav.isModalInPresentation = true
+                }
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true, completion: nil)
+            }
         }
         else {
             print("DEBUG: User is LOGGED in...")
             print("DEBUG: User id is ::: \(currentUser?.uid)")
             configureUI()
+            fetchUserData()
         }
     }
     
@@ -84,7 +88,7 @@ extension HomeViewController{
         do {
             try Auth.auth().signOut()
             let navLogin = UINavigationController(rootViewController: LoginController())
-            navLogin.modalTransitionStyle = .partialCurl
+//            navLogin.modalTransitionStyle = .partialCurl
             navLogin.modalPresentationStyle = .fullScreen
             present(navLogin, animated: true)
         }
@@ -114,14 +118,14 @@ extension HomeViewController{
         // MARK: - Sign out Button
         view.addSubview(signOutButton)
         signOutButton.customAnchor(bottom: view.bottomAnchor, right: view.rightAnchor)
-
+        
     }
     
     @objc func handleSignOut() {
         print("DEBUG:: Signingout")
         signOut()
     }
-
+    
     
     // MARK: - Configuring Google Maps
     func setupMapView() {
@@ -129,7 +133,7 @@ extension HomeViewController{
         enableLocationServices()
         let camera = GMSCameraPosition.camera(withLatitude: -33.87, longitude: 151.8, zoom: 6.0)
         mapView = GMSMapView.map(withFrame: self.view.frame, camera: camera)
-
+        
         
         mapView.delegate = self
         self.view.addSubview(mapView)
@@ -172,10 +176,9 @@ extension HomeViewController{
 
 
 // MARK: - Location Manager
-extension HomeViewController: CLLocationManagerDelegate {
+extension HomeViewController {
     // MARK: - Location Manager
     func enableLocationServices() {
-        locationManager?.delegate = self
         switch locationManager?.authorizationStatus {
         case .notDetermined:
             print("DEBUG: Some error while getting location")
@@ -194,32 +197,6 @@ extension HomeViewController: CLLocationManagerDelegate {
             print("DEBUG: Some error")
         }
     }
-
-    
-    // MARK: - Location Delegates
-//    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-//        if locationManager?.authorizationStatus == .authorizedWhenInUse {
-//            // Asking for always location
-//            locationManager?.requestAlwaysAuthorization()
-//        }
-//    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        mapView.clear()
-        location = locations.last
-        
-        if let latitude = location?.coordinate.latitude, let longitude = location?.coordinate.longitude {
-            marker.position.latitude = latitude
-            marker.position.longitude = longitude
-            marker.map = mapView
-            marker.title = "Hello"
-            mapView.animate(to: GMSCameraPosition(latitude: latitude, longitude: longitude, zoom: 18.0))
-        }
-    }
-    
-//    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-//        print("DEGUB: We got an error here ::: \(error.localizedDescription)")
-//    }
 }
 
 // MARK: - Location Input View Delegate
@@ -245,7 +222,7 @@ extension HomeViewController: LocationInputViewDelegate {
                 self.inputActivationView.alpha = 1.0
             }
         }
-
+        
     }
 }
 

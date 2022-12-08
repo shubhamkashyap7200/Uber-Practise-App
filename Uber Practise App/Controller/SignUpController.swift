@@ -177,7 +177,7 @@ extension SignUpController {
             
             // MARK: - Geofire
             if accountTypeIndex == 1 {
-                guard let location = self?.location else { return }
+                guard let location = self?.location else { print("DEBUG:: Location is nil from guard statement"); return }
                 let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATION)
                 geofire.setLocation(location, forKey: uid) { (error) in
                     self?.uploadUserDataAndDismiss(uid: uid, values: values)
