@@ -68,23 +68,17 @@ extension HomeViewController{
     }
     
     func fetchDrivers() {
-        var driverArray: [User] = []
         
         guard let location = locationManager?.location else { print("Location is nil"); return }
         Service.shared.fetchDrivers(location: location) { (driver) in
-            print("DEBUG:: \(driver.fullname)")
-            driverArray.append(driver)
             
             // MARK: - Adding Markers
-            print("DEBUG:: Driver Array count in \(driverArray.count)")
-            for driver in driverArray {
-                print("1")
-                guard let location = driver.location?.coordinate else { print("Nil value here"); return }
-                let driverMarker = DriverMarker(uid: driver.uid)
-                driverMarker.position = location
-                driverMarker.map = self.mapView
-            }
-
+            print("DEBUG:: \(driver.location)")
+            print("1")
+            guard let location = driver.location?.coordinate else { print("Nil value here"); return }
+            let driverMarker = DriverMarker(uid: driver.uid)
+            driverMarker.position = location
+            driverMarker.map = self.mapView
         }
         
     }

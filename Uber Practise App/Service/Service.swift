@@ -40,7 +40,7 @@ struct Service {
                 self.fetchUserData(uid: uid) { user in
                     var driver = user
                     driver.location = location
-                    completion(user)
+                    completion(driver)
                 }
             })
         }
