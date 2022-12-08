@@ -68,19 +68,38 @@ extension HomeViewController{
     }
     
     func fetchDrivers() {
+        var driverArray: [DriverMarker] = []
         
         guard let location = locationManager?.location else { print("Location is nil"); return }
         Service.shared.fetchDrivers(location: location) { (driver) in
             
             // MARK: - Adding Markers
-            print("DEBUG:: \(driver.location)")
-            print("1")
             guard let location = driver.location?.coordinate else { print("Nil value here"); return }
-            let driverMarker = DriverMarker(uid: driver.uid)
-            driverMarker.position = location
-            driverMarker.map = self.mapView
+            let driverMarker = DriverMarker(location: location, uid: driver.uid, title: driver.fullname)
+//            driverArray.append(driverMarker)
+            print("DEBUG:: \(driverArray)")
+            
+            // MARK: - Checking if driver already added
+            var driverIsVisible: Bool {
+                get {
+                    return driverArray.contains { driverMarker in
+                        if driverMarker.uid == driver.uid {
+                            print("DEBUG:: Handle update driver positions")
+                            driverMarker.updateMarkerPosition(withCoordinate: location)
+                            return true
+                        }
+                        return false
+                    }
+                }
+            }
+            
+            print(driverIsVisible)
+            
+            if !driverIsVisible {
+                driverArray.append(driverMarker)
+                driverMarker.map = self.mapView
+            }
         }
-        
     }
     
     func checkIfUserIsLoggedIn() {
@@ -151,9 +170,8 @@ extension HomeViewController{
     func setupMapView() {
         // MARK: - Camera and Mapview
         enableLocationServices()
-        let camera = GMSCameraPosition.camera(withLatitude: -33.87, longitude: 151.8, zoom: 6.0)
+        let camera = GMSCameraPosition.camera(withLatitude: -20.5937, longitude: 78.9629, zoom: 1.0)
         mapView = GMSMapView.map(withFrame: self.view.frame, camera: camera)
-        
         
         mapView.delegate = self
         self.view.addSubview(mapView)
@@ -272,14 +290,5 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - Google Maps Delegate
 extension HomeViewController: GMSMapViewDelegate {
-//    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
-//        // MARK: - Location marker is nil check
-//        if locationMarker != nil {
-//            guard let location = locationMarker?.position else { print("Location marker is nil"); return }
-//
-//            mapView.center = mapView.projection.point(for: location)
-//            mapView.center.y = mapView.center.y - 100
-//        }
-//    }
 }
 
