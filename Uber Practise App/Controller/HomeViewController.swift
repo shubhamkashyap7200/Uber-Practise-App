@@ -417,8 +417,10 @@ private extension HomeViewController {
         let request = MKLocalSearch.Request()
         if let coord = locationManager?.location?.coordinate {
             request.region = MKCoordinateRegion(center: coord, latitudinalMeters: CLLocationDistance(floatLiteral: 10.0), longitudinalMeters: CLLocationDistance(floatLiteral: 10.0))
+            print("DEBUG:: \(request.region)")
         }
         print("DEBUG:: \(request.region)")
+
         request.naturalLanguageQuery = naturalLanaguageQuery
         
         let search = MKLocalSearch(request: request)
