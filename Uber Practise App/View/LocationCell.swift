@@ -29,9 +29,10 @@ class LocationCell: UITableViewCell {
     // MARK: - Lifecycles
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .clear
+//        backgroundColor = .clear
         selectionStyle = .none
-        addBlurToView(style: .systemUltraThinMaterialLight)
+//        isUserInteractionEnabled = true
+//        addBlurToView(style: .systemUltraThinMaterialLight)
         
         let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stackView.axis = .vertical

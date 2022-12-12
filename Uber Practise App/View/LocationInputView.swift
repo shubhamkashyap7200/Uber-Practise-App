@@ -155,12 +155,13 @@ class LocationInputView: UIView {
 extension LocationInputView: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         guard let query = textField.text else { return false }
+        textField.resignFirstResponder()
         
         if query != "" {
             delegate?.executeSearch(query: query)
             return true
         }
         
-        return false
+        return true
     }
 }

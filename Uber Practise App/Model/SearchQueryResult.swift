@@ -6,8 +6,17 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct SearchQueryResult {
-    let name: String?
-    let address: String?
+    var name: [String]
+    var address: [String]
+    var coordinates: [CLLocation]
+    
+    
+    init() {
+        self.name = []
+        self.address = []
+        self.coordinates = []
+    }
 }

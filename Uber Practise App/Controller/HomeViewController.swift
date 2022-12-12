@@ -19,7 +19,12 @@ class HomeViewController: UIViewController {
     private let locationManager = LocationHandler.shared.locationManager
     var mapView: GMSMapView!
     fileprivate var locationMarker : GMSMarker? = GMSMarker()
-    var searchResults: [Any] = []
+    var searchResultsTitle: [String] = []
+    var searchResultsAddress: [String] = []
+    var searchResultsCoordinates: [CLLocation] = []
+    
+    var searchQueryResult = SearchQueryResult()
+    
 
     //    var location: CLLocation!
     
@@ -31,6 +36,15 @@ class HomeViewController: UIViewController {
             locationInputView.user = user
         }
     }
+    
+    // MARK: - Action Button
+    private let actionButton: UIButton = { () -> UIButton in
+        let btn = UIButton(type: .system)
+        btn.setImage(UIImage(systemName: "line.3.horizontal")?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
+        btn.addTarget(self, action: #selector(handleActionButton), for: .touchUpInside)
+        return btn
+    }()
+
     
     private let signOutButton: UIButton = { () -> UIButton in
         let btn = UIButton(type: .system)
@@ -52,8 +66,9 @@ class HomeViewController: UIViewController {
         
         checkIfUserIsLoggedIn()
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
-        view.addGestureRecognizer(tap)
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+//        tap.cancelsTouchesInView = false
+//        view.addGestureRecognizer(tap)
     }
 }
 
@@ -152,10 +167,16 @@ extension HomeViewController{
     // MARK: - Configure UI
     func configureUI() {
         setupMapView()
+        
+        // MARK: - Adding Action Button
+        view.addSubview(actionButton)
+        actionButton.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, paddingTop: 16.0, paddingLeft: 20.0, width: 30.0, height: 30.0)
+        
+        
         view.addSubview(inputActivationView)
         inputActivationView.customCenterX(inView: view)
-        inputActivationView.setDimensions(height: 50.0, width: view.frame.width - 64)
-        inputActivationView.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32.0)
+        inputActivationView.setDimensions(height: 50.0, width: view.frame.width - 64.0)
+        inputActivationView.customAnchor(top: actionButton.bottomAnchor, paddingTop: 10.0)
         inputActivationView.alpha = 0.0
         inputActivationView.delegate = self
         
@@ -218,10 +239,26 @@ extension HomeViewController{
         tableView.register(LocationCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.rowHeight = 60.0
         tableView.tableFooterView = UIView()
+        tableView.allowsSelection = true
         
         let height = view.frame.height - locationInputViewHeight
         tableView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: height)
         view.addSubview(tableView)
+    }
+    
+    func dismissLocationView(completion: ((Bool) ->  Void)? = nil) {
+        UIView.animate(withDuration: 0.3) {
+            self.locationInputView.alpha = 0.0
+            self.tableView.frame.origin.y = self.view.frame.height
+            self.locationInputView.removeFromSuperview()
+            UIView.animate(withDuration: 0.3, animations: {
+                self.inputActivationView.alpha = 1.0
+            },completion: completion)
+        }
+    }
+    
+    @objc func handleActionButton() {
+        print("DEBUG:: Pressed the action button")
     }
 }
 
@@ -265,24 +302,22 @@ extension HomeViewController: LocationInputViewDelegate {
     // MARK: - Search Query Function
     func executeSearch(query: String) {
         print("DEBUG:: Query is here \(query)")
-        searchBy(naturalLanaguageQuery: query) { (results) in
-            self.searchResults = results
+        searchBy(naturalLanaguageQuery: query) { (resultsTitle, resultsAddress, resultsCoords)  in
+//            self.searchResultsTitle = resultsTitle
+//            self.searchResultsAddress = resultsAddress
+//            self.searchResultsCoordinates = resultsCoords
+            
+            self.searchQueryResult.name = resultsTitle
+            self.searchQueryResult.address = resultsAddress
+            self.searchQueryResult.coordinates = resultsCoords
+            
             self.tableView.reloadData()
         }
     }
     
     func dismissLocationInputView() {
         dismissKeyboard()
-        UIView.animate(withDuration: 0.3) {
-            self.locationInputView.alpha = 0.0
-            self.tableView.frame.origin.y = self.view.frame.height
-        } completion: { _ in
-            self.locationInputView.removeFromSuperview()
-            UIView.animate(withDuration: 0.3) {
-                self.inputActivationView.alpha = 1.0
-            }
-        }
-        
+        dismissLocationView()
     }
 }
 
@@ -299,17 +334,34 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (section == 0) ? 2 : searchResults.count
+        return (section == 0) ? 2 : searchQueryResult.name.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! LocationCell
-        if searchResults.isEmpty == false {
-            cell.titleLabel.text = searchResults[0] as! String
-            cell.subtitleLabel.text = searchResults[1] as! String
+        
+        if indexPath.section == 1 {
+//            if !searchResultsTitle.isEmpty && !searchResultsAddress.isEmpty {
+//                cell.titleLabel.text = searchResultsTitle[indexPath.row]
+//                cell.subtitleLabel.text = searchResultsAddress[indexPath.row]
+            
+            cell.titleLabel.text = searchQueryResult.name[indexPath.row]
+            cell.subtitleLabel.text = searchQueryResult.address[indexPath.row]
+            //            }
         }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dismissLocationView { _ in
+            if !self.searchResultsCoordinates.isEmpty {
+                let marker = GMSMarker()
+                marker.position = self.searchQueryResult.coordinates[indexPath.row].coordinate
+                marker.map = self.mapView
+                self.mapView.selectedMarker = marker
+            }
+        }
     }
 }
 
@@ -323,10 +375,13 @@ extension HomeViewController: GMSMapViewDelegate {
 
 // MARK: - Map Helper functions
 private extension HomeViewController {
-    func searchBy(naturalLanaguageQuery: String, completion: @escaping ([Any]) -> Void) {
-        var results = [Any]()
+    func searchBy(naturalLanaguageQuery: String, completion: @escaping ([String], [String], [CLLocation]) -> Void) {
+        var resultsTitle = [String]()
+        var resultsAddress = [String]()
+        var resultsCoords = [CLLocation]()
+        
         let request = MKLocalSearch.Request()
-        request.region = MKCoordinateRegion(center: (locationManager?.location!.coordinate)!, latitudinalMeters: CLLocationDistance(floatLiteral: 5.0), longitudinalMeters: CLLocationDistance(floatLiteral: 5.0))
+//        request.region = MKCoordinateRegion(MKMapRect)
         request.naturalLanguageQuery = naturalLanaguageQuery
         
         let search = MKLocalSearch(request: request)
@@ -334,12 +389,11 @@ private extension HomeViewController {
             guard let response = response else { return }
             
             response.mapItems.forEach { item in
-                results.append(item.placemark.name ?? "No Data")
-                results.append(item.placemark.title ?? "NOOO DATA")
-                results.append(item.placemark.location)
+                resultsTitle.append(item.placemark.name ?? "No Data")
+                resultsAddress.append(item.placemark.title ?? "NOOO DATA")
+                resultsCoords.append(item.placemark.location ?? CLLocation(latitude: 0.0, longitude: 0.0))
             }
-            completion(results)
+            completion(resultsTitle, resultsAddress, resultsCoords)
         }
     }
 }
-

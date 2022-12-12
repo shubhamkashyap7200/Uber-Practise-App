@@ -130,6 +130,7 @@ extension UIView {
         blurEffectView.frame = self.bounds
         blurEffectView.layer.masksToBounds = true
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.isUserInteractionEnabled = true
         addSubview(blurEffectView)
     }
     
