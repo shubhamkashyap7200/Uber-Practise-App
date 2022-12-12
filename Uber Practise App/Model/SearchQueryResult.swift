@@ -11,7 +11,7 @@ import CoreLocation
 struct SearchQueryResult {
     var name: [String]
     var address: [String]
-    var coordinates: [CLLocation]
+    var coordinates: [CLLocationCoordinate2D]
     
     
     init() {

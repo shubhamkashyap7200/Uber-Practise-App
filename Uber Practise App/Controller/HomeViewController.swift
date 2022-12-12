@@ -13,11 +13,19 @@ import GooglePlaces
 import MapKit
 
 private let reuseIdentifier: String = "Location Cell"
+private enum ActionButtonConfig {
+    case showView
+    case dismissActionView
+    
+    init() {
+        self = .showView
+    }
+}
 
 class HomeViewController: UIViewController {
     // MARK: - Properties
     private let locationManager = LocationHandler.shared.locationManager
-    var mapView: GMSMapView!
+    private var mapView: GMSMapView!
     fileprivate var locationMarker : GMSMarker? = GMSMarker()
     var searchResultsTitle: [String] = []
     var searchResultsAddress: [String] = []
@@ -31,6 +39,8 @@ class HomeViewController: UIViewController {
     
     private let tableView = UITableView()
     private final let locationInputViewHeight: CGFloat = 200.0
+    private var actionButtonConfig = ActionButtonConfig()
+    
     private var user: User? {
         didSet {
             locationInputView.user = user
@@ -194,6 +204,18 @@ extension HomeViewController{
         
     }
     
+    fileprivate func configureActionButton(config: ActionButtonConfig) {
+        switch config {
+        case .showView:
+            self.inputActivationView.alpha = 1.0
+            self.actionButton.setImage(UIImage(systemName: "line.3.horizontal")?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
+            
+        case .dismissActionView:
+            actionButton.setImage(UIImage(systemName: "arrow.backward")?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
+            actionButtonConfig = .dismissActionView
+        }
+    }
+    
     @objc func handleSignOut() {
         print("DEBUG:: Signingout")
         signOut()
@@ -247,18 +269,24 @@ extension HomeViewController{
     }
     
     func dismissLocationView(completion: ((Bool) ->  Void)? = nil) {
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.3, animations: {
             self.locationInputView.alpha = 0.0
             self.tableView.frame.origin.y = self.view.frame.height
             self.locationInputView.removeFromSuperview()
-            UIView.animate(withDuration: 0.3, animations: {
-                self.inputActivationView.alpha = 1.0
-            },completion: completion)
-        }
+        }, completion: completion)
     }
     
     @objc func handleActionButton() {
-        print("DEBUG:: Pressed the action button")
+        switch actionButtonConfig {
+        case .showView:
+            print("DEBUG:: Show view")
+        case .dismissActionView:
+            print("DEBUG:: dismiss View")
+            UIView.animate(withDuration: 0.3) {
+                self.configureActionButton(config: .showView)
+            }
+            mapView.clear()
+        }
     }
 }
 
@@ -303,21 +331,23 @@ extension HomeViewController: LocationInputViewDelegate {
     func executeSearch(query: String) {
         print("DEBUG:: Query is here \(query)")
         searchBy(naturalLanaguageQuery: query) { (resultsTitle, resultsAddress, resultsCoords)  in
-//            self.searchResultsTitle = resultsTitle
-//            self.searchResultsAddress = resultsAddress
-//            self.searchResultsCoordinates = resultsCoords
             
             self.searchQueryResult.name = resultsTitle
             self.searchQueryResult.address = resultsAddress
             self.searchQueryResult.coordinates = resultsCoords
             
+            print("DEBUG:: VIEW \(self.searchQueryResult.coordinates)")
             self.tableView.reloadData()
         }
     }
     
     func dismissLocationInputView() {
         dismissKeyboard()
-        dismissLocationView()
+        dismissLocationView { _ in
+            UIView.animate(withDuration: 0.3, animations: {
+                self.inputActivationView.alpha = 1.0
+            })
+        }
     }
 }
 
@@ -341,25 +371,29 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! LocationCell
         
         if indexPath.section == 1 {
-//            if !searchResultsTitle.isEmpty && !searchResultsAddress.isEmpty {
-//                cell.titleLabel.text = searchResultsTitle[indexPath.row]
-//                cell.subtitleLabel.text = searchResultsAddress[indexPath.row]
-            
-            cell.titleLabel.text = searchQueryResult.name[indexPath.row]
-            cell.subtitleLabel.text = searchQueryResult.address[indexPath.row]
-            //            }
+        
+            if !searchQueryResult.name.isEmpty && !searchQueryResult.address.isEmpty {
+                cell.titleLabel.text = searchQueryResult.name[indexPath.row]
+                cell.subtitleLabel.text = searchQueryResult.address[indexPath.row]
+            }
         }
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        configureActionButton(config: .dismissActionView)
+        
         dismissLocationView { _ in
-            if !self.searchResultsCoordinates.isEmpty {
+            if !self.searchQueryResult.coordinates.isEmpty {
                 let marker = GMSMarker()
-                marker.position = self.searchQueryResult.coordinates[indexPath.row].coordinate
+                marker.position = self.searchQueryResult.coordinates[indexPath.row]
+                marker.icon = GMSMarker.markerImage(with: .systemBlue)
                 marker.map = self.mapView
+                
                 self.mapView.selectedMarker = marker
+                
+                self.generatePolylines(toDestination: marker.position)
             }
         }
     }
@@ -375,13 +409,16 @@ extension HomeViewController: GMSMapViewDelegate {
 
 // MARK: - Map Helper functions
 private extension HomeViewController {
-    func searchBy(naturalLanaguageQuery: String, completion: @escaping ([String], [String], [CLLocation]) -> Void) {
+    func searchBy(naturalLanaguageQuery: String, completion: @escaping ([String], [String], [CLLocationCoordinate2D]) -> Void) {
         var resultsTitle = [String]()
         var resultsAddress = [String]()
-        var resultsCoords = [CLLocation]()
+        var resultsCoords = [CLLocationCoordinate2D]()
         
         let request = MKLocalSearch.Request()
-//        request.region = MKCoordinateRegion(MKMapRect)
+        if let coord = locationManager?.location?.coordinate {
+            request.region = MKCoordinateRegion(center: coord, latitudinalMeters: CLLocationDistance(floatLiteral: 10.0), longitudinalMeters: CLLocationDistance(floatLiteral: 10.0))
+        }
+        print("DEBUG:: \(request.region)")
         request.naturalLanguageQuery = naturalLanaguageQuery
         
         let search = MKLocalSearch(request: request)
@@ -391,9 +428,23 @@ private extension HomeViewController {
             response.mapItems.forEach { item in
                 resultsTitle.append(item.placemark.name ?? "No Data")
                 resultsAddress.append(item.placemark.title ?? "NOOO DATA")
-                resultsCoords.append(item.placemark.location ?? CLLocation(latitude: 0.0, longitude: 0.0))
+                resultsCoords.append(item.placemark.location?.coordinate ?? CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0))
             }
             completion(resultsTitle, resultsAddress, resultsCoords)
         }
     }
+    
+    
+    func generatePolylines(toDestination destination: CLLocationCoordinate2D) {
+        if let myLocation = locationManager?.location?.coordinate {
+            let newPath = GMSMutablePath()
+            newPath.add(myLocation)
+            newPath.add(destination)
+            let polyline: GMSPolyline = GMSPolyline(path: newPath)
+            polyline.strokeColor = .systemBlue
+            polyline.strokeWidth = 4.0
+            polyline.map = mapView
+        }
+    }
 }
+

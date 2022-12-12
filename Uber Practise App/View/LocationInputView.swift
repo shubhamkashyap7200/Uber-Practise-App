@@ -27,7 +27,7 @@ class LocationInputView: UIView {
         let button = UIButton(type: .system)
         
         var config = UIImage.SymbolConfiguration(pointSize: 10.0, weight: .bold)
-        let image = UIImage(systemName: "chevron.backward", withConfiguration: config)
+        let image = UIImage(systemName: "arrow.backward", withConfiguration: config)?.withTintColor(.black, renderingMode: .alwaysOriginal)
         image?.withRenderingMode(.alwaysTemplate)
         image?.withTintColor(.black)
         
