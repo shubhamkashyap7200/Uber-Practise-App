@@ -26,26 +26,29 @@ class HomeViewController: UIViewController {
     // MARK: - Properties
     private let locationManager = LocationHandler.shared.locationManager
     private var mapView: GMSMapView!
+    private let rideActionView = RideActionView()
+    private let tableView = UITableView()
+    private final let locationInputViewHeight: CGFloat = 200.0
+    private final let rideActionViewHeight: CGFloat = 300.0
+    private var actionButtonConfig = ActionButtonConfig()
+
     fileprivate var locationMarker : GMSMarker? = GMSMarker()
     var searchResultsTitle: [String] = []
     var searchResultsAddress: [String] = []
     var searchResultsCoordinates: [CLLocation] = []
-    
     var searchQueryResult = SearchQueryResult()
-    
+    let selectedDriverMarker = GMSMarker()
+    let selectedDriverPolyline: GMSPolyline = GMSPolyline()
+
 
     //    var location: CLLocation!
-    
-    
-    private let tableView = UITableView()
-    private final let locationInputViewHeight: CGFloat = 200.0
-    private var actionButtonConfig = ActionButtonConfig()
     
     private var user: User? {
         didSet {
             locationInputView.user = user
         }
     }
+    
     
     // MARK: - Action Button
     private let actionButton: UIButton = { () -> UIButton in
@@ -177,6 +180,7 @@ extension HomeViewController{
     // MARK: - Configure UI
     func configureUI() {
         setupMapView()
+        configureRideActionView()
         
         // MARK: - Adding Action Button
         view.addSubview(actionButton)
@@ -202,6 +206,20 @@ extension HomeViewController{
         view.addSubview(signOutButton)
         signOutButton.customAnchor(bottom: view.bottomAnchor, right: view.rightAnchor)
         
+    }
+    
+    func configureRideActionView() {
+        view.addSubview(rideActionView)
+        rideActionView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: rideActionViewHeight)
+    }
+    
+    func AnimateRideActionView(shouldShow: Bool) {
+        let yOrigin = shouldShow ? self.view.frame.height - self.rideActionViewHeight : self.view.frame.height
+        
+        UIView.animate(withDuration: 0.3) {
+            self.rideActionView.frame.origin.y = yOrigin
+        }
+        rideActionView.titleLabel
     }
     
     fileprivate func configureActionButton(config: ActionButtonConfig) {
@@ -284,8 +302,12 @@ extension HomeViewController{
             print("DEBUG:: dismiss View")
             UIView.animate(withDuration: 0.3) {
                 self.configureActionButton(config: .showView)
+                self.AnimateRideActionView(shouldShow: false)
             }
-            mapView.clear()
+            
+            // MARK: - Clearing the mapview from driverMarkers and driverPolylines
+            self.selectedDriverMarker.map = nil
+            self.selectedDriverPolyline.map = nil
         }
     }
 }
@@ -386,14 +408,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         
         dismissLocationView { _ in
             if !self.searchQueryResult.coordinates.isEmpty {
-                let marker = GMSMarker()
-                marker.position = self.searchQueryResult.coordinates[indexPath.row]
-                marker.icon = GMSMarker.markerImage(with: .systemBlue)
-                marker.map = self.mapView
+                self.selectedDriverMarker.position = self.searchQueryResult.coordinates[indexPath.row]
+                self.selectedDriverMarker.icon = GMSMarker.markerImage(with: .systemBlue)
+                self.selectedDriverMarker.map = self.mapView
                 
-                self.mapView.selectedMarker = marker
+                self.generatePolylinesAndZoomIn(toDestination: self.selectedDriverMarker.position)
                 
-                self.generatePolylines(toDestination: marker.position)
+                self.AnimateRideActionView(shouldShow: true)
+                self.rideActionView.titleLabel.text = self.searchQueryResult.name[indexPath.row]
+                self.rideActionView.addressLabel.text = self.searchQueryResult.address[indexPath.row]
             }
         }
     }
@@ -416,10 +439,10 @@ private extension HomeViewController {
         
         let request = MKLocalSearch.Request()
         if let coord = locationManager?.location?.coordinate {
-            request.region = MKCoordinateRegion(center: coord, latitudinalMeters: CLLocationDistance(floatLiteral: 10.0), longitudinalMeters: CLLocationDistance(floatLiteral: 10.0))
-            print("DEBUG:: \(request.region)")
+            request.region = MKCoordinateRegion(center: coord, latitudinalMeters: 250.0, longitudinalMeters: 250.0)
+            print("DEBUG:: PP \(request.region)")
         }
-        print("DEBUG:: \(request.region)")
+        print("DEBUG:: RR \(request.region)")
 
         request.naturalLanguageQuery = naturalLanaguageQuery
         
@@ -437,15 +460,21 @@ private extension HomeViewController {
     }
     
     
-    func generatePolylines(toDestination destination: CLLocationCoordinate2D) {
+    func generatePolylinesAndZoomIn(toDestination destination: CLLocationCoordinate2D) {
         if let myLocation = locationManager?.location?.coordinate {
-            let newPath = GMSMutablePath()
-            newPath.add(myLocation)
-            newPath.add(destination)
-            let polyline: GMSPolyline = GMSPolyline(path: newPath)
-            polyline.strokeColor = .systemBlue
-            polyline.strokeWidth = 4.0
-            polyline.map = mapView
+            // MARK: - Creating Polyline
+            let path = GMSMutablePath()
+            path.add(myLocation)
+            path.add(destination)
+            selectedDriverPolyline.path = path
+            selectedDriverPolyline.strokeColor = .systemBlue
+            selectedDriverPolyline.strokeWidth = 4.0
+            selectedDriverPolyline.map = mapView
+            
+            // MARK: - Zooming in
+            let bounds = GMSCoordinateBounds(path: path)
+//            self.mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 15.0))
+            self.mapView.animate(with: GMSCameraUpdate.fit(bounds, with: UIEdgeInsets(top: 50.0, left: 50.0, bottom: rideActionViewHeight * 1.4, right: 50.0)))
         }
     }
 }

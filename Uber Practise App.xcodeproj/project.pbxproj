@@ -13,6 +13,7 @@
 		5123ECB02933F0C7002735C4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5123ECAF2933F0C7002735C4 /* Assets.xcassets */; };
 		5123ECC42933F2C6002735C4 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5123ECC32933F2C6002735C4 /* LoginController.swift */; };
 		5123ECC62933FB30002735C4 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5123ECC52933FB30002735C4 /* Extension.swift */; };
+		51263A232947BC1700741BD8 /* RideActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51263A222947BC1700741BD8 /* RideActionView.swift */; };
 		513EADAF293EF1F100776586 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513EADAE293EF1F100776586 /* Service.swift */; };
 		513EADB1293EFB9100776586 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513EADB0293EFB9100776586 /* User.swift */; };
 		513EADB3293F136500776586 /* LocationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513EADB2293F136500776586 /* LocationHandler.swift */; };
@@ -38,6 +39,7 @@
 		5123ECB42933F0C7002735C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5123ECC32933F2C6002735C4 /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		5123ECC52933FB30002735C4 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		51263A222947BC1700741BD8 /* RideActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActionView.swift; sourceTree = "<group>"; };
 		513EADAE293EF1F100776586 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		513EADB0293EFB9100776586 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		513EADB2293F136500776586 /* LocationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHandler.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				51915B30293E559D00B1FF15 /* LocationInputActivationView.swift */,
 				51915B32293E63B500B1FF15 /* LocationInputView.swift */,
 				51931CB2293EE60900169E24 /* LocationCell.swift */,
+				51263A222947BC1700741BD8 /* RideActionView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -308,6 +311,7 @@
 				51728EAB2936801D002772FB /* HomeViewController.swift in Sources */,
 				513EADB1293EFB9100776586 /* User.swift in Sources */,
 				513EADAF293EF1F100776586 /* Service.swift in Sources */,
+				51263A232947BC1700741BD8 /* RideActionView.swift in Sources */,
 				51CF1285294259CF00FF3C36 /* SearchQueryResult.swift in Sources */,
 				51915B31293E559D00B1FF15 /* LocationInputActivationView.swift in Sources */,
 				5123ECC62933FB30002735C4 /* Extension.swift in Sources */,

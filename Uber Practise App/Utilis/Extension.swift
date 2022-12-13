@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GoogleMaps
 
 // MARK: - Extensions
 extension UIView {
@@ -165,4 +166,8 @@ extension UIColor {
     
     static let backgroundColor = UIColor.rbg(red: 25, green: 25, blue: 25)
     static let mainBlueTintColor = UIColor.rbg(red: 17, green: 154, blue: 237)
+}
+
+extension GMSMapView {
+//    func zoomToFit(markers)
 }
