@@ -46,6 +46,11 @@ class HomeViewController: UIViewController {
     private var user: User? {
         didSet {
             locationInputView.user = user
+            if user?.accountType == .passenger {
+                fetchDrivers()
+            } else {
+                print("DEBUG:: User Accounte is driver")
+            }
         }
     }
     
@@ -98,8 +103,6 @@ extension HomeViewController{
     
     func fetchDrivers() {
         var driverArray: [DriverMarker] = []
-//        var bounds = GMSCoordinateBounds()
-        
         guard let location = locationManager?.location else { print("Location is nil"); return }
         Service.shared.fetchDrivers(location: location) { (driver) in
             
@@ -160,7 +163,7 @@ extension HomeViewController{
     func configureAll() {
         configureUI()
         fetchUserData()
-        fetchDrivers()
+//        fetchDrivers()
     }
     
     func signOut() {

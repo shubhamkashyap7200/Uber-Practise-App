@@ -81,7 +81,8 @@ class RideActionView: UIView {
 //        backgroundColor = .white
         addBlurToView(style: .systemUltraThinMaterialLight)
         addShadow()
-
+        layer.borderWidth = 3.0
+        layer.borderColor = UIColor.white.withAlphaComponent(0.6).cgColor
         
         let stackView = UIStackView(arrangedSubviews: [titleLabel, addressLabel])
         stackView.axis = .vertical
