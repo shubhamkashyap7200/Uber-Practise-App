@@ -210,6 +210,7 @@ extension HomeViewController{
     
     func configureRideActionView() {
         view.addSubview(rideActionView)
+        rideActionView.delegate = self
         rideActionView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: rideActionViewHeight)
     }
     
@@ -219,7 +220,6 @@ extension HomeViewController{
         UIView.animate(withDuration: 0.3) {
             self.rideActionView.frame.origin.y = yOrigin
         }
-        rideActionView.titleLabel
     }
     
     fileprivate func configureActionButton(config: ActionButtonConfig) {
@@ -479,3 +479,20 @@ private extension HomeViewController {
     }
 }
 
+// MARK: - Uploading the trips to firebase
+
+extension HomeViewController: RideActionViewDelegate {
+    func uploadTrip() {
+        guard let startCoords = locationManager?.location?.coordinate else { return }
+        let endCoords = selectedDriverMarker.position
+        
+        Service.shared.uploadTripsToFirebase(startCoords: startCoords, endCoords: endCoords) { (err, ref) in
+            if let error = err {
+                print("DEBUG:: \(error.localizedDescription)")
+                return
+            }
+            
+            print("DEBUG:: Upload successful")
+        }
+    }
+}

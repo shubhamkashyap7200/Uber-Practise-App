@@ -8,9 +8,13 @@
 import Foundation
 import UIKit
 
+protocol RideActionViewDelegate: AnyObject {
+    func uploadTrip()
+}
+
 class RideActionView: UIView {
     // MARK: - Properties
-    
+    weak var delegate: RideActionViewDelegate?
 //    var rideActionViewData: SearchQueryResult? {
 //        didSet {
 //            titleLabel.text = rideActionViewData?.name[]
@@ -120,6 +124,7 @@ class RideActionView: UIView {
 extension RideActionView {
      @objc func handleConfirmAction() {
         print("DEBUG:: CONFIRM PRESSED")
+         delegate?.uploadTrip()
     }
 }
 
