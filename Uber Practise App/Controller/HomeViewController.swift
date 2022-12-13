@@ -48,6 +48,7 @@ class HomeViewController: UIViewController {
             locationInputView.user = user
             if user?.accountType == .passenger {
                 fetchDrivers()
+                configureLocationInputActivationView()
             } else {
                 print("DEBUG:: User Accounte is driver")
             }
@@ -189,7 +190,17 @@ extension HomeViewController{
         view.addSubview(actionButton)
         actionButton.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, paddingTop: 16.0, paddingLeft: 20.0, width: 30.0, height: 30.0)
         
+                
+        // MARK: - TableView
+        configureTableView()
         
+        // MARK: - Sign out Button
+        view.addSubview(signOutButton)
+        signOutButton.customAnchor(bottom: view.bottomAnchor, right: view.rightAnchor)
+        
+    }
+    
+    func configureLocationInputActivationView() {
         view.addSubview(inputActivationView)
         inputActivationView.customCenterX(inView: view)
         inputActivationView.setDimensions(height: 50.0, width: view.frame.width - 64.0)
@@ -201,14 +212,6 @@ extension HomeViewController{
         UIView.animate(withDuration: 0.75) { [weak self] in
             self?.inputActivationView.alpha = 1.0
         }
-        
-        // MARK: - TableView
-        configureTableView()
-        
-        // MARK: - Sign out Button
-        view.addSubview(signOutButton)
-        signOutButton.customAnchor(bottom: view.bottomAnchor, right: view.rightAnchor)
-        
     }
     
     func configureRideActionView() {
