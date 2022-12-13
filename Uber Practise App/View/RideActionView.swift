@@ -8,9 +8,13 @@
 import Foundation
 import UIKit
 
+protocol RideActionViewDelegate: AnyObject {
+    func uploadTrip()
+}
+
 class RideActionView: UIView {
     // MARK: - Properties
-    
+    weak var delegate: RideActionViewDelegate?
 //    var rideActionViewData: SearchQueryResult? {
 //        didSet {
 //            titleLabel.text = rideActionViewData?.name[]
@@ -77,7 +81,8 @@ class RideActionView: UIView {
 //        backgroundColor = .white
         addBlurToView(style: .systemUltraThinMaterialLight)
         addShadow()
-
+        layer.borderWidth = 3.0
+        layer.borderColor = UIColor.white.withAlphaComponent(0.6).cgColor
         
         let stackView = UIStackView(arrangedSubviews: [titleLabel, addressLabel])
         stackView.axis = .vertical
@@ -120,6 +125,7 @@ class RideActionView: UIView {
 extension RideActionView {
      @objc func handleConfirmAction() {
         print("DEBUG:: CONFIRM PRESSED")
+         delegate?.uploadTrip()
     }
 }
 

@@ -46,6 +46,12 @@ class HomeViewController: UIViewController {
     private var user: User? {
         didSet {
             locationInputView.user = user
+            if user?.accountType == .passenger {
+                fetchDrivers()
+                configureLocationInputActivationView()
+            } else {
+                print("DEBUG:: User Accounte is driver")
+            }
         }
     }
     
@@ -98,8 +104,6 @@ extension HomeViewController{
     
     func fetchDrivers() {
         var driverArray: [DriverMarker] = []
-//        var bounds = GMSCoordinateBounds()
-        
         guard let location = locationManager?.location else { print("Location is nil"); return }
         Service.shared.fetchDrivers(location: location) { (driver) in
             
@@ -160,7 +164,7 @@ extension HomeViewController{
     func configureAll() {
         configureUI()
         fetchUserData()
-        fetchDrivers()
+//        fetchDrivers()
     }
     
     func signOut() {
@@ -186,7 +190,17 @@ extension HomeViewController{
         view.addSubview(actionButton)
         actionButton.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, paddingTop: 16.0, paddingLeft: 20.0, width: 30.0, height: 30.0)
         
+                
+        // MARK: - TableView
+        configureTableView()
         
+        // MARK: - Sign out Button
+        view.addSubview(signOutButton)
+        signOutButton.customAnchor(bottom: view.bottomAnchor, right: view.rightAnchor)
+        
+    }
+    
+    func configureLocationInputActivationView() {
         view.addSubview(inputActivationView)
         inputActivationView.customCenterX(inView: view)
         inputActivationView.setDimensions(height: 50.0, width: view.frame.width - 64.0)
@@ -198,18 +212,11 @@ extension HomeViewController{
         UIView.animate(withDuration: 0.75) { [weak self] in
             self?.inputActivationView.alpha = 1.0
         }
-        
-        // MARK: - TableView
-        configureTableView()
-        
-        // MARK: - Sign out Button
-        view.addSubview(signOutButton)
-        signOutButton.customAnchor(bottom: view.bottomAnchor, right: view.rightAnchor)
-        
     }
     
     func configureRideActionView() {
         view.addSubview(rideActionView)
+        rideActionView.delegate = self
         rideActionView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: rideActionViewHeight)
     }
     
@@ -219,7 +226,6 @@ extension HomeViewController{
         UIView.animate(withDuration: 0.3) {
             self.rideActionView.frame.origin.y = yOrigin
         }
-        rideActionView.titleLabel
     }
     
     fileprivate func configureActionButton(config: ActionButtonConfig) {
@@ -479,3 +485,20 @@ private extension HomeViewController {
     }
 }
 
+// MARK: - Uploading the trips to firebase
+
+extension HomeViewController: RideActionViewDelegate {
+    func uploadTrip() {
+        guard let startCoords = locationManager?.location?.coordinate else { return }
+        let endCoords = selectedDriverMarker.position
+        
+        Service.shared.uploadTripsToFirebase(startCoords: startCoords, endCoords: endCoords) { (err, ref) in
+            if let error = err {
+                print("DEBUG:: \(error.localizedDescription)")
+                return
+            }
+            
+            print("DEBUG:: Upload successful")
+        }
+    }
+}
