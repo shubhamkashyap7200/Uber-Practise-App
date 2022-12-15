@@ -12,6 +12,33 @@ import FirebaseAuth
 import GooglePlaces
 import MapKit
 
+//// MARK: - Enabling the live preview for UIKit
+//#if canImport(SwiftUI) && DEBUG
+//import SwiftUI
+//struct ViewControllerRepresentable: UIViewControllerRepresentable {
+//    let hm = HomeViewController()
+//    func makeUIViewController(context: Context) -> HomeViewController {
+//        return hm
+//    }
+//
+//    func updateUIViewController(_ uiViewController: HomeViewController, context: Context) {
+//        //
+//    }
+//
+//    typealias UIViewControllerType = HomeViewController
+//}
+//
+//@available(iOS 13.0, *)
+//struct ViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//        ViewControllerRepresentable()
+//    }
+//}
+//
+//#endif
+
+
+
 private let reuseIdentifier: String = "Location Cell"
 private enum ActionButtonConfig {
     case showView
@@ -50,11 +77,20 @@ class HomeViewController: UIViewController {
                 fetchDrivers()
                 configureLocationInputActivationView()
             } else {
-                print("DEBUG:: User Accounte is driver")
+                observeTrips()
             }
         }
     }
     
+    
+    private var trip: Trip? {
+        didSet {
+            guard let trip = trip else { return }
+            let controller = PickupController(trip: trip)
+            controller.modalPresentationStyle = .fullScreen
+            self.present(controller, animated: true, completion: nil)
+        }
+    }
     
     // MARK: - Action Button
     private let actionButton: UIButton = { () -> UIButton in
@@ -99,6 +135,12 @@ extension HomeViewController{
         guard let uid = Auth.auth().currentUser?.uid else { print("Current uid is nil"); return }
         Service.shared.fetchUserData(uid: uid) { (user) in
             self.user = user
+        }
+    }
+    
+    func observeTrips() {
+        Service.shared.observeDrivers { (trip) in
+            self.trip = trip
         }
     }
     
