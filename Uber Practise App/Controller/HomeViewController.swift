@@ -76,6 +76,7 @@ class HomeViewController: UIViewController {
             if user?.accountType == .passenger {
                 fetchDrivers()
                 configureLocationInputActivationView()
+                observeCurrentTrip()
             } else {
                 observeTrips()
             }
@@ -85,10 +86,18 @@ class HomeViewController: UIViewController {
     
     private var trip: Trip? {
         didSet {
-            guard let trip = trip else { return }
-            let controller = PickupController(trip: trip)
-            controller.modalPresentationStyle = .fullScreen
-            self.present(controller, animated: true, completion: nil)
+            guard let user = user else { return }
+            
+            if user.accountType == .driver {
+                guard let trip = trip else { return }
+                let controller = PickupController(trip: trip)
+                controller.modalPresentationStyle = .fullScreen
+                controller.delegate = self
+                self.present(controller, animated: true, completion: nil)
+            }
+            else {
+                print("DEBUG:: Show ride action view for accepted..")
+            }
         }
     }
     
@@ -125,11 +134,28 @@ class HomeViewController: UIViewController {
 //        tap.cancelsTouchesInView = false
 //        view.addGestureRecognizer(tap)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        guard let trip = trip else { return }
+        print("DEBUG:: Trip state is \(trip.state)")
+    }
+
 }
 
 // MARK: - Custom Functions
 extension HomeViewController{
     // MARK: - API
+    
+    func observeCurrentTrip() {
+        Service.shared.observeCurrentTrip { trip in
+            self.trip = trip
+            
+            if trip.state == .accepted {
+                print("DEBUG:: Trip was accepted")
+                self.shouldPresentLoadingView(false)
+            }
+        }
+    }
     
     func fetchUserData() {
         guard let uid = Auth.auth().currentUser?.uid else { print("Current uid is nil"); return }
@@ -534,13 +560,28 @@ extension HomeViewController: RideActionViewDelegate {
         guard let startCoords = locationManager?.location?.coordinate else { return }
         let endCoords = selectedDriverMarker.position
         
+        shouldPresentLoadingView(true, message: "Finding you a ride..")
+        
         Service.shared.uploadTripsToFirebase(startCoords: startCoords, endCoords: endCoords) { (err, ref) in
             if let error = err {
                 print("DEBUG:: \(error.localizedDescription)")
                 return
             }
             
-            print("DEBUG:: Upload successful")
+            UIView.animate(withDuration: 0.3) {
+                self.rideActionView.frame.origin.y = self.view.frame.height
+            }
         }
+    }
+}
+
+
+// MARK: - PickupControllerDelegate
+
+extension HomeViewController: PickupControllerDelegate {
+    func didAcceptTrip(_ trip: Trip) {
+        self.trip?.state = .accepted
+//        self.trip?.driverUID = .
+        self.dismiss(animated: true, completion: nil)
     }
 }

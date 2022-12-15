@@ -31,6 +31,7 @@ struct Service {
         }
     }
     
+    
     // MARK: - Fetch Drivers
     func fetchDrivers(location: CLLocation, completion: @escaping(User) -> Void) {
         let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATION)
@@ -46,6 +47,7 @@ struct Service {
             })
         }
     }
+    
     
     // MARK: - Upload the trips to firebase
     func uploadTripsToFirebase(startCoords pickUpCoordinates: CLLocationCoordinate2D, endCoords destinationCoordinates: CLLocationCoordinate2D, completion: @escaping(Error?, DatabaseReference) -> Void) {
@@ -73,6 +75,31 @@ struct Service {
             
             print("DEBUG:: Trip state is :: \(trip.state)")
             completion(trip)
+        }
+    }
+    
+    
+    func acceptTrip(trip: Trip, completion: @escaping(Error?, DatabaseReference) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let values = ["driverUid": uid, "state": TripState.accepted.rawValue] as [String : Any]
+        
+        REF_TRIPS.child(trip.passengeerUID).updateChildValues(values) { (error, reference) in
+            if let error = error {
+                print("DEBUG:: Error while accepting the trip : \(error.localizedDescription)")
+                return
+            }
+            
+            REF_TRIPS.child(trip.passengeerUID).updateChildValues(values, withCompletionBlock: completion)
+        }
+    }
+    
+    func observeCurrentTrip(completetion: @escaping(Trip) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        REF_TRIPS.child(uid).observe(.value) { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            let uid = snapshot.key
+            let trip = Trip(passengerUID: uid, dictionary: dictionary)
+            completetion(trip)
         }
     }
 }

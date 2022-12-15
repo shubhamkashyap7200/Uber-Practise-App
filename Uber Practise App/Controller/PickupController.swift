@@ -8,10 +8,15 @@
 import UIKit
 import GoogleMaps
 
+protocol PickupControllerDelegate: AnyObject {
+    func didAcceptTrip(_ trip: Trip)
+}
+
 class PickupController: UIViewController, GMSMapViewDelegate {
     // MARK: - Properties
     private let mapView = GMSMapView()
     private let trip: Trip
+    weak var delegate: PickupControllerDelegate?
     
     init(trip: Trip) {
         self.trip = trip
@@ -58,7 +63,7 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         print("DEBUG:: Trip passenger uid is :: \(trip.passengeerUID)")
         configureUI()
     }
-    
+        
     // MARK: - Selectors
     @objc func handleDismiss() {
         print("DEBUG:: Dismissing")
@@ -67,7 +72,9 @@ class PickupController: UIViewController, GMSMapViewDelegate {
     
     @objc func handleAcceptTrip() {
         print("DEBUG:: Accepting")
-        dismiss(animated: true)
+        Service.shared.acceptTrip(trip: trip) { (error, reference) in
+            self.delegate?.didAcceptTrip(self.trip)
+        }
     }
 
     // MARK: - API

@@ -167,3 +167,50 @@ extension UIColor {
     static let backgroundColor = UIColor.rbg(red: 25, green: 25, blue: 25)
     static let mainBlueTintColor = UIColor.rbg(red: 17, green: 154, blue: 237)
 }
+
+extension UIViewController {
+    func shouldPresentLoadingView(_ present: Bool, message: String? = nil) {
+        if present {
+            let loadingView = UIView()
+            loadingView.frame = self.view.frame
+            loadingView.backgroundColor = .backgroundColor
+            loadingView.alpha = 0
+            loadingView.tag = 1
+            
+            let activityIndicator = UIActivityIndicatorView()
+            activityIndicator.style = .large
+            activityIndicator.color = .white
+            activityIndicator.center = loadingView.center
+            
+            let label = UILabel()
+            label.text = message
+            label.font = .systemFont(ofSize: 24.0)
+            label.textColor = .white
+            label.textAlignment = .center
+            label.alpha = 0.87
+            
+            self.view.addSubview(loadingView)
+            self.view.addSubview(activityIndicator)
+            self.view.addSubview(label)
+            
+            label.customCenterX(inView: self.view)
+            label.customAnchor(top: activityIndicator.bottomAnchor, paddingTop: 32.0)
+            activityIndicator.startAnimating()
+            UIView.animate(withDuration: 0.3) {
+                loadingView.alpha = 0.7
+            }
+        }
+        
+        else {
+            view.subviews.forEach { subview in
+                if subview.tag == 1 {
+                    UIView.animate(withDuration: 0.3) {
+                        subview.alpha = 1.0
+                    } completion: { _ in
+                        subview.removeFromSuperview()
+                    }
+                }
+            }
+        }
+    }
+}
