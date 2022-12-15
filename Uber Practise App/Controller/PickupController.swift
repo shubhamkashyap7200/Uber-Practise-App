@@ -22,7 +22,24 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let
+    private let pickupLabel: UILabel = { () -> UILabel in
+        let label = UILabel()
+        label.text = "Would you like to pickup this passenger?"
+        label.font = UIFont.systemFont(ofSize: 16.0)
+        label.textColor = .white
+        return label
+    }()
+    
+    private let acceptTripButton: UIButton = { () -> UIButton in
+        let button = UIButton(type: .system)
+        button.backgroundColor = .white
+        button.setTitle("Accept Trip", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20.0)
+        button.setTitleColor(.black, for: .normal)
+        button.layer.cornerRadius = 12.0
+        button.addTarget(self, action: #selector(handleAcceptTrip), for: .touchUpInside)
+        return button
+    }()
     
     private let cancelButton: UIButton = { () -> UIButton in
         let button = UIButton(type: .system)
@@ -47,6 +64,11 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         print("DEBUG:: Dismissing")
         dismiss(animated: true)
     }
+    
+    @objc func handleAcceptTrip() {
+        print("DEBUG:: Accepting")
+        dismiss(animated: true)
+    }
 
     // MARK: - API
 
@@ -57,16 +79,31 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         view.addSubview(cancelButton)
         cancelButton.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingLeft: 16.0, width: 32.0, height: 32.0)
         configureMapView()
+        
+        view.addSubview(pickupLabel)
+        pickupLabel.customAnchor(top: mapView.bottomAnchor, paddingTop: 16.0)
+        pickupLabel.customCenterX(inView: view)
+        
+        view.addSubview(acceptTripButton)
+        acceptTripButton.customAnchor(top: pickupLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 16.0, paddingLeft: 32.0, paddingRight: 32.0, height: 56.0)
     }
     
     func configureMapView() {
         view.addSubview(mapView)
         mapView.delegate = self
         mapView.setDimensions(height: 270.0, width: 270.0)
-        mapView.camera = GMSCameraPosition.camera(withLatitude: 37.0902, longitude: 95.7129, zoom: 4.0)
+        
+        let camera = GMSCameraPosition.camera(withLatitude: trip.pickUpCoordinates.latitude, longitude: trip.pickUpCoordinates.longitude, zoom: 17.0)
+        mapView.camera = camera
+        mapView.animate(to: camera)
+        
+        let marker = GMSMarker(position: trip.pickUpCoordinates)
+        marker.map = mapView
+        mapView.selectedMarker = marker
+
+                
         mapView.layer.cornerRadius = 270 / 2
         mapView.customCenterX(inView: view)
-        mapView.customCenterY(inView: view)
-//        mapView.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32.0)
+        mapView.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32.0)
     }
 }
