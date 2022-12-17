@@ -149,10 +149,12 @@ extension HomeViewController{
     func observeCurrentTrip() {
         Service.shared.observeCurrentTrip { trip in
             self.trip = trip
-            
+            print(trip.state)
             if trip.state == .accepted {
                 print("DEBUG:: Trip was accepted")
                 self.shouldPresentLoadingView(false)
+                
+                self.animateRideActionView(shouldShow: true, config: .tripAccepted)
             }
         }
     }
@@ -288,11 +290,16 @@ extension HomeViewController{
         rideActionView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: rideActionViewHeight)
     }
     
-    func AnimateRideActionView(shouldShow: Bool) {
+    func animateRideActionView(shouldShow: Bool, config: RideActionViewConfiguration? = nil) {
         let yOrigin = shouldShow ? self.view.frame.height - self.rideActionViewHeight : self.view.frame.height
-        
+                
         UIView.animate(withDuration: 0.3) {
             self.rideActionView.frame.origin.y = yOrigin
+        }
+        
+        if shouldShow {
+            guard let config = config else { print("DEBUG:: NIL HERE"); return }
+            rideActionView.configureUI(withConfigure: config)
         }
     }
     
@@ -376,7 +383,7 @@ extension HomeViewController{
             print("DEBUG:: dismiss View")
             UIView.animate(withDuration: 0.3) {
                 self.configureActionButton(config: .showView)
-                self.AnimateRideActionView(shouldShow: false)
+                self.animateRideActionView(shouldShow: false)
             }
             
             // MARK: - Clearing the mapview from driverMarkers and driverPolylines
@@ -488,7 +495,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 self.generatePolylinesAndZoomIn(toDestination: self.selectedDriverMarker.position)
                 
-                self.AnimateRideActionView(shouldShow: true)
+                self.animateRideActionView(shouldShow: true, config: .requestRide)
                 self.rideActionView.titleLabel.text = self.searchQueryResult.name[indexPath.row]
                 self.rideActionView.addressLabel.text = self.searchQueryResult.address[indexPath.row]
             }
@@ -581,7 +588,17 @@ extension HomeViewController: RideActionViewDelegate {
 extension HomeViewController: PickupControllerDelegate {
     func didAcceptTrip(_ trip: Trip) {
         self.trip?.state = .accepted
-//        self.trip?.driverUID = .
-        self.dismiss(animated: true, completion: nil)
+        
+        let marker = GMSMarker()
+        marker.position = trip.pickUpCoordinates
+        marker.map = mapView
+        
+        generatePolylinesAndZoomIn(toDestination: marker.position)
+        mapView.animate(toLocation: marker.position)
+        
+        
+        self.dismiss(animated: true) {
+            self.animateRideActionView(shouldShow: true, config: .tripAccepted)
+        }
     }
 }

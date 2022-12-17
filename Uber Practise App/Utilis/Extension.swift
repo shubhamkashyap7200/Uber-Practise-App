@@ -176,18 +176,22 @@ extension UIViewController {
             loadingView.backgroundColor = .backgroundColor
             loadingView.alpha = 0
             loadingView.tag = 1
+
             
             let activityIndicator = UIActivityIndicatorView()
             activityIndicator.style = .large
             activityIndicator.color = .white
             activityIndicator.center = loadingView.center
-            
+            activityIndicator.tag = 1
+
             let label = UILabel()
             label.text = message
             label.font = .systemFont(ofSize: 24.0)
             label.textColor = .white
             label.textAlignment = .center
             label.alpha = 0.87
+            label.tag = 1
+
             
             self.view.addSubview(loadingView)
             self.view.addSubview(activityIndicator)

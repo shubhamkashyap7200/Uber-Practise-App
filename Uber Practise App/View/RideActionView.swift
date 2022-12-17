@@ -12,15 +12,50 @@ protocol RideActionViewDelegate: AnyObject {
     func uploadTrip()
 }
 
+enum RideActionViewConfiguration {
+    case requestRide
+    case tripAccepted
+    case pickupPassenger
+    case tripInProgress
+    case endTrip
+    
+    init() {
+        self = .requestRide
+    }
+}
+
+enum ButtonAction: CustomStringConvertible {
+    case requestRide
+    case cancel
+    case getDirections
+    case pickup
+    case dropOff
+    
+    var description: String {
+        switch self {
+        case .requestRide:
+             return "CONFIRM UBER X"
+        case .cancel:
+             return "CANCEL RIDE"
+        case .getDirections:
+            return "GET DIRECTIONS"
+        case .pickup:
+            return "PICK UP PASSENGER"
+        case .dropOff:
+            return "DROP OFF PASSENGER"
+        }
+    }
+    
+    init() {
+        self = .requestRide
+    }
+}
+
 class RideActionView: UIView {
     // MARK: - Properties
+    var config = RideActionViewConfiguration()
+    var buttonAction = ButtonAction()
     weak var delegate: RideActionViewDelegate?
-//    var rideActionViewData: SearchQueryResult? {
-//        didSet {
-//            titleLabel.text = rideActionViewData?.name[]
-//            addressLabel.text = rideActionViewData?.address[0]
-//        }
-//    }
 
     var titleLabel: UILabel = { ()-> UILabel in
         let label = UILabel()
@@ -117,6 +152,27 @@ class RideActionView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Helper Functions
+    func configureUI(withConfigure config: RideActionViewConfiguration) {
+        switch config {
+        case .requestRide:
+            buttonAction = .requestRide
+            actionButton.setTitle(buttonAction.description, for: .normal)
+            break
+        case .tripAccepted:
+            titleLabel.text = "En Route to Passenger"
+            buttonAction = .getDirections
+            actionButton.setTitle(buttonAction.description, for: .normal)
+            break
+        case .pickupPassenger:
+            break
+        case .tripInProgress:
+            break
+        case .endTrip:
+            break
+        }
     }
 }
 
