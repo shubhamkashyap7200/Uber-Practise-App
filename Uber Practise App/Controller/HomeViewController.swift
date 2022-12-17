@@ -153,8 +153,10 @@ extension HomeViewController{
             if trip.state == .accepted {
                 print("DEBUG:: Trip was accepted")
                 self.shouldPresentLoadingView(false)
-                
-                self.animateRideActionView(shouldShow: true, config: .tripAccepted)
+                guard let driverUID =  trip.driverUID else { return }
+                Service.shared.fetchUserData(uid: driverUID) { (user) in
+                    self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: user)
+                }
             }
         }
     }
@@ -290,7 +292,7 @@ extension HomeViewController{
         rideActionView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: rideActionViewHeight)
     }
     
-    func animateRideActionView(shouldShow: Bool, config: RideActionViewConfiguration? = nil) {
+    func animateRideActionView(shouldShow: Bool, config: RideActionViewConfiguration? = nil, user: User? = nil) {
         let yOrigin = shouldShow ? self.view.frame.height - self.rideActionViewHeight : self.view.frame.height
                 
         UIView.animate(withDuration: 0.3) {
@@ -300,6 +302,10 @@ extension HomeViewController{
         if shouldShow {
             guard let config = config else { print("DEBUG:: NIL HERE"); return }
             rideActionView.configureUI(withConfigure: config)
+            
+            if let user = user {
+                rideActionView.user = user
+            }
         }
     }
     

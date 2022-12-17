@@ -56,6 +56,7 @@ class RideActionView: UIView {
     var config = RideActionViewConfiguration()
     var buttonAction = ButtonAction()
     weak var delegate: RideActionViewDelegate?
+    var user: User?
 
     var titleLabel: UILabel = { ()-> UILabel in
         let label = UILabel()
