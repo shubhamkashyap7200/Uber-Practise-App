@@ -570,6 +570,18 @@ private extension HomeViewController {
 // MARK: - Uploading the trips to firebase
 
 extension HomeViewController: RideActionViewDelegate {
+    func cancelRide() {
+        print("DEBUG:: Canceling the trip")
+        Service.shared.cancelTrip { (error, reference) in
+            if let error = error {
+                print("DEBUG: Error while canceling the trip is \(error.localizedDescription)")
+                return
+            }
+            
+            self.animateRideActionView(shouldShow: false)
+        }
+    }
+    
     func uploadTrip() {
         guard let startCoords = locationManager?.location?.coordinate else { return }
         let endCoords = selectedDriverMarker.position
