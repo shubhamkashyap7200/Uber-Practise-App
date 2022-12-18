@@ -337,6 +337,12 @@ extension HomeViewController{
         
         mapView.delegate = self
         self.view.addSubview(mapView)
+        
+        
+        guard let location = locationManager?.location?.coordinate else { return }
+        let marker = GMSMarker(position: location)
+        marker.map = mapView
+        mapView.animate(toLocation: marker.position)
     }
     
     func configureLocationInputView() {
@@ -399,6 +405,17 @@ extension HomeViewController{
         }
     }
 }
+
+// MARK: - Google maps delegates functions
+extension HomeViewController: GMSMapViewDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let user = self.user else { return }
+        guard user.accountType == .driver else { return }
+        guard let currentLocation = locations.last else { return }
+        Service.shared.updateDriverLocation(location: currentLocation)
+    }
+}
+
 
 
 // MARK: - Location Manager
@@ -509,14 +526,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 }
-
-// MARK: - Google Maps Delegate
-extension HomeViewController: GMSMapViewDelegate {
-//    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
-//        mapView.animate(toLocation: (locationManager?.location!.coordinate)!)
-//    }
-}
-
 
 // MARK: - Map Helper functions
 private extension HomeViewController {
