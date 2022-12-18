@@ -154,8 +154,8 @@ extension HomeViewController{
                 print("DEBUG:: Trip was accepted")
                 self.shouldPresentLoadingView(false)
                 guard let driverUID =  trip.driverUID else { return }
-                Service.shared.fetchUserData(uid: driverUID) { (user) in
-                    self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: user)
+                Service.shared.fetchUserData(uid: driverUID) { (driver) in
+                    self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: driver)
                 }
             }
         }
@@ -301,11 +301,12 @@ extension HomeViewController{
         
         if shouldShow {
             guard let config = config else { print("DEBUG:: NIL HERE"); return }
-            rideActionView.configureUI(withConfigure: config)
-            
+
             if let user = user {
                 rideActionView.user = user
             }
+            
+            rideActionView.configureUI(withConfigure: config)
         }
     }
     
@@ -604,7 +605,9 @@ extension HomeViewController: PickupControllerDelegate {
         
         
         self.dismiss(animated: true) {
-            self.animateRideActionView(shouldShow: true, config: .tripAccepted)
+            Service.shared.fetchUserData(uid: trip.passengeerUID) { (passenger) in
+                self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: passenger)
+            }
         }
     }
 }
