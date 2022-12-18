@@ -579,15 +579,18 @@ extension HomeViewController: RideActionViewDelegate {
             }
             
             self.animateRideActionView(shouldShow: false)
-            self.mapView.clear()
-            self.actionButton.setImage(UIImage(systemName: "line.3.horizontal"), for: .normal)
+            self.actionButton.setImage(UIImage(systemName: "line.3.horizontal")?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
             self.actionButtonConfig = .showView
             
-            if let location = self.locationManager?.location?.coordinate {
-                let marker = GMSMarker(position: location)
-                marker.map = self.mapView
-                self.mapView.animate(toLocation: marker.position)
-            }
+            self.clearTheMapAndRecenterItTheTheUserPosition()
+        }
+    }
+    
+    func clearTheMapAndRecenterItTheTheUserPosition() {
+        if let location = self.locationManager?.location?.coordinate {
+            let marker = GMSMarker(position: location)
+            marker.map = self.mapView
+            self.mapView.animate(toLocation: marker.position)
         }
     }
     
@@ -625,12 +628,9 @@ extension HomeViewController: PickupControllerDelegate {
         mapView.animate(toLocation: marker.position)
         
         Service.shared.observeTripCancelled(trip: trip) {
-            self.mapView.clear()
             self.animateRideActionView(shouldShow: false)
-            
-            if let userLocation = self.locationManager?.location?.coordinate {
-                self.mapView.animate(toLocation: userLocation)
-            }
+            self.clearTheMapAndRecenterItTheTheUserPosition()
+            self.presentAlertController(withTitle: "Oops !!1", withMessage: "The passenger has decided to cancel the trip. /nPress Ok to continue ...")
         }
         
         self.dismiss(animated: true) {
