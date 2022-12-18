@@ -34,18 +34,4 @@ class LocationHandler: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("DEGUB: We got an error here ::: \(error.localizedDescription)")
     }
-    
-//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        mapView.clear()
-//        location = locations.last
-//
-//        if let latitude = location?.coordinate.latitude, let longitude = location?.coordinate.longitude {
-//            marker.position.latitude = latitude
-//            marker.position.longitude = longitude
-//            marker.map = mapView
-//            marker.title = "Hello"
-//            mapView.animate(to: GMSCameraPosition(latitude: latitude, longitude: longitude, zoom: 18.0))
-//        }
-//    }
-
 }
