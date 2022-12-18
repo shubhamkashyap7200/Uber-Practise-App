@@ -615,6 +615,14 @@ extension HomeViewController: PickupControllerDelegate {
         generatePolylinesAndZoomIn(toDestination: marker.position)
         mapView.animate(toLocation: marker.position)
         
+        Service.shared.observeTripCancelled(trip: trip) {
+            self.mapView.clear()
+            self.animateRideActionView(shouldShow: false)
+            
+            if let userLocation = self.locationManager?.location?.coordinate {
+                self.mapView.animate(toLocation: userLocation)
+            }
+        }
         
         self.dismiss(animated: true) {
             Service.shared.fetchUserData(uid: trip.passengeerUID) { (passenger) in

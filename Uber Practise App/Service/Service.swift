@@ -78,6 +78,13 @@ struct Service {
         }
     }
     
+    func observeTripCancelled(trip: Trip, completion: @escaping() -> Void) {
+        REF_TRIPS.child(trip.passengeerUID).observeSingleEvent(of: .childRemoved) { _ in
+            print("DEBUG:: Deleted the trip ...")
+            completion()
+        }
+    }
+    
     
     func acceptTrip(trip: Trip, completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
