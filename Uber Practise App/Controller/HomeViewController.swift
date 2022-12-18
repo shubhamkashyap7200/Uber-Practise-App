@@ -579,6 +579,15 @@ extension HomeViewController: RideActionViewDelegate {
             }
             
             self.animateRideActionView(shouldShow: false)
+            self.mapView.clear()
+            self.actionButton.setImage(UIImage(systemName: "line.3.horizontal"), for: .normal)
+            self.actionButtonConfig = .showView
+            
+            if let location = self.locationManager?.location?.coordinate {
+                let marker = GMSMarker(position: location)
+                marker.map = self.mapView
+                self.mapView.animate(toLocation: marker.position)
+            }
         }
     }
     
