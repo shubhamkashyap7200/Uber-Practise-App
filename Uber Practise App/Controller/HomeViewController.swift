@@ -630,7 +630,7 @@ extension HomeViewController: PickupControllerDelegate {
         Service.shared.observeTripCancelled(trip: trip) {
             self.animateRideActionView(shouldShow: false)
             self.clearTheMapAndRecenterItTheTheUserPosition()
-            self.presentAlertController(withTitle: "Oops !!1", withMessage: "The passenger has decided to cancel the trip. /nPress Ok to continue ...")
+            self.presentAlertController(withTitle: "Oops !!!", withMessage: "The passenger has decided to cancel the trip. \nPress Ok to continue ...")
         }
         
         self.dismiss(animated: true) {
