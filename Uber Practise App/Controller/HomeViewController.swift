@@ -151,14 +151,24 @@ extension HomeViewController{
     func observeCurrentTrip() {
         Service.shared.observeCurrentTrip { trip in
             self.trip = trip
-            print(trip.state)
-            if trip.state == .accepted {
+            guard let state = trip.state else { return }
+            guard let driverUID =  trip.driverUID else { return }
+            
+            switch state {
+            case .requested:
+                break
+            case .accepted:
                 print("DEBUG:: Trip was accepted")
                 self.shouldPresentLoadingView(false)
-                guard let driverUID =  trip.driverUID else { return }
                 Service.shared.fetchUserData(uid: driverUID) { (driver) in
                     self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: driver)
                 }
+            case .driverArrived:
+                self.rideActionView.config = .driverArrived
+            case .inProgress:
+                break
+            case .completed:
+                break
             }
         }
     }
@@ -419,6 +429,9 @@ extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
         print("DEBUG:: Getting called Enter Region :: \(region)")
         
         self.rideActionView.config = .pickupPassenger
+        
+        guard let trip = self.trip else { return }
+        Service.shared.updateTripState(trip: trip, state: .driverArrived)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -659,6 +672,7 @@ extension HomeViewController: RideActionViewDelegate {
 
 extension HomeViewController: PickupControllerDelegate {
     func didAcceptTrip(_ trip: Trip) {
+        self.trip = trip
         self.trip?.state = .accepted
         
         let marker = GMSMarker()
