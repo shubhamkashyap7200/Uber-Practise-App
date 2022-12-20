@@ -612,7 +612,7 @@ extension HomeViewController: RideActionViewDelegate {
             self.actionButtonConfig = .showView
             
             self.clearTheMapAndRecenterItTheTheUserPosition()
-            self.inputActivationView.alpha = 0.0
+            self.inputActivationView.alpha = 1.0
         }
     }
     
