@@ -412,6 +412,14 @@ extension HomeViewController{
 // MARK: - Google maps delegates functions
 extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
     
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        print("DEBUG:: Getting called Start Monitoring :: \(region)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        print("DEBUG:: Getting called Enter Region :: \(region)")
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         print("DEBUG:: Getting called when the location changes :: \(locations.last)")
         
@@ -604,6 +612,7 @@ extension HomeViewController: RideActionViewDelegate {
             self.actionButtonConfig = .showView
             
             self.clearTheMapAndRecenterItTheTheUserPosition()
+            self.inputActivationView.alpha = 0.0
         }
     }
     
@@ -613,6 +622,10 @@ extension HomeViewController: RideActionViewDelegate {
             marker.map = self.mapView
             self.mapView.animate(toLocation: marker.position)
         }
+        
+        self.selectedDriverMarker.map = nil
+        self.selectedDriverPolyline.map = nil
+
     }
     
     // MARK: - Creating a region and monitor it
@@ -651,6 +664,8 @@ extension HomeViewController: PickupControllerDelegate {
         marker.position = trip.pickUpCoordinates
         marker.map = mapView
         
+        self.setCustomRegion(withCoordinates: trip.pickUpCoordinates)
+
         generatePolylinesAndZoomIn(toDestination: marker.position)
         mapView.animate(toLocation: marker.position)
         
