@@ -615,6 +615,12 @@ extension HomeViewController: RideActionViewDelegate {
         }
     }
     
+    // MARK: - Creating a region and monitor it
+    func setCustomRegion(withCoordinates coordinates: CLLocationCoordinate2D) {
+        let region = CLCircularRegion(center: coordinates, radius: 100.0, identifier: "pickup")
+        locationManager?.startMonitoring(for: region)
+    }
+    
     func uploadTrip() {
         guard let startCoords = locationManager?.location?.coordinate else { return }
         let endCoords = selectedDriverMarker.position
