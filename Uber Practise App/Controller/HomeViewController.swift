@@ -414,12 +414,14 @@ extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         print("DEBUG:: Getting called when the location changes :: \(locations.last)")
-//        guard let user = self.user else { return }
-//        guard user.accountType == .driver else { return }
-        guard let currentLocation = locations.last else { return }
         
+        guard let currentLocation = locations.last else { return }
+
         marker.position = currentLocation.coordinate
         mapView.animate(toLocation: marker.position)
+
+        guard let user = self.user else { return }
+        guard user.accountType == .driver else { return }
         
         Service.shared.updateDriverLocation(location: currentLocation)
     }
