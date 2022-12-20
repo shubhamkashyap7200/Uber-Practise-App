@@ -54,10 +54,16 @@ enum ButtonAction: CustomStringConvertible {
 
 class RideActionView: UIView {
     // MARK: - Properties
-    var config = RideActionViewConfiguration()
+//    var config = RideActionViewConfiguration()
     var buttonAction = ButtonAction()
     weak var delegate: RideActionViewDelegate?
     var user: User?
+    
+    var config = RideActionViewConfiguration() {
+        didSet {
+            configureUI(withConfigure: config)
+        }
+    }
 
     var titleLabel: UILabel = { ()-> UILabel in
         let label = UILabel()
@@ -165,7 +171,7 @@ class RideActionView: UIView {
     }
     
     // MARK: - Helper Functions
-    func configureUI(withConfigure config: RideActionViewConfiguration) {
+    private func configureUI(withConfigure config: RideActionViewConfiguration) {
         switch config {
         case .requestRide:
             buttonAction = .requestRide

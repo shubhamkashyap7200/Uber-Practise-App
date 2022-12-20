@@ -83,8 +83,7 @@ class HomeViewController: UIViewController {
             }
         }
     }
-    
-    
+        
     private var trip: Trip? {
         didSet {
             guard let user = user else { return }
@@ -309,7 +308,7 @@ extension HomeViewController{
                 rideActionView.user = user
             }
             
-            rideActionView.configureUI(withConfigure: config)
+            rideActionView.config = config
         }
     }
     
@@ -418,6 +417,8 @@ extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         print("DEBUG:: Getting called Enter Region :: \(region)")
+        
+        self.rideActionView.config = .pickupPassenger
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
