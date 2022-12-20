@@ -53,6 +53,7 @@ class HomeViewController: UIViewController {
     // MARK: - Properties
     private let locationManager = LocationHandler.shared.locationManager
     private var mapView: GMSMapView!
+    let marker = GMSMarker()
     private let rideActionView = RideActionView()
     private let tableView = UITableView()
     private final let locationInputViewHeight: CGFloat = 200.0
@@ -133,6 +134,8 @@ class HomeViewController: UIViewController {
 //        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
 //        tap.cancelsTouchesInView = false
 //        view.addGestureRecognizer(tap)
+        
+        print("DEBUG:: USER TYPE \(user?.accountType)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -340,7 +343,7 @@ extension HomeViewController{
         
         
         guard let location = locationManager?.location?.coordinate else { return }
-        let marker = GMSMarker(position: location)
+        marker.position = location
         marker.map = mapView
         mapView.animate(toLocation: marker.position)
     }
@@ -407,11 +410,17 @@ extension HomeViewController{
 }
 
 // MARK: - Google maps delegates functions
-extension HomeViewController: GMSMapViewDelegate {
+extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let user = self.user else { return }
-        guard user.accountType == .driver else { return }
+        print("DEBUG:: Getting called when the location changes :: \(locations.last)")
+//        guard let user = self.user else { return }
+//        guard user.accountType == .driver else { return }
         guard let currentLocation = locations.last else { return }
+        
+        marker.position = currentLocation.coordinate
+        mapView.animate(toLocation: marker.position)
+        
         Service.shared.updateDriverLocation(location: currentLocation)
     }
 }
@@ -422,6 +431,7 @@ extension HomeViewController: GMSMapViewDelegate {
 extension HomeViewController {
     // MARK: - Location Manager
     func enableLocationServices() {
+        locationManager?.delegate = self
         switch locationManager?.authorizationStatus {
         case .notDetermined:
             print("DEBUG: Some error while getting location")
