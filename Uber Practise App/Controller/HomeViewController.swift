@@ -49,6 +49,11 @@ private enum ActionButtonConfig {
     }
 }
 
+private enum AnnotationType: String {
+    case pickup
+    case destination
+}
+
 class HomeViewController: UIViewController {
     // MARK: - Properties
     private let locationManager = LocationHandler.shared.locationManager
@@ -172,6 +177,8 @@ extension HomeViewController{
             
             let bounds = GMSCoordinateBounds(path: path)
             self.mapView.animate(with: GMSCameraUpdate.fit(bounds, with: UIEdgeInsets(top: 50.0, left: 50.0, bottom: self.rideActionViewHeight * 1.4, right: 50.0)))
+            
+            self.setCustomRegion(withType: .destination, withCoordinates: trip.destinationCoordinates)
         }
     }
     
@@ -193,8 +200,15 @@ extension HomeViewController{
             case .driverArrived:
                 self.rideActionView.config = .driverArrived
             case .inProgress:
-                break
+                self.rideActionView.config = .driverArrived
+            case .arrivedDestination:
+                self.rideActionView.config = .endTrip
             case .completed:
+                self.animateRideActionView(shouldShow: false)
+                self.clearTheMapAndRecenterItTheTheUserPosition()
+                self.actionButtonConfig = .showView
+                self.configureActionButton(config: .showView)
+                self.presentAlertController(withTitle: "Trip Completed", withMessage: "We hope you enjoyed your trip")
                 break
             }
         }
@@ -449,15 +463,28 @@ extension HomeViewController{
 extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-        print("DEBUG:: Getting called Start Monitoring :: \(region)")
+        if region.identifier == AnnotationType.pickup.rawValue {
+            print("DEBUG:: Did start monitoring pickup region :: \(region)")
+        }
+        
+        if region.identifier == AnnotationType.destination.rawValue {
+            print("DEBUG:: Did start monitoring destination region :: \(region)")
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        print("DEBUG:: Getting called Enter Region :: \(region)")
-        
         guard let trip = self.trip else { return }
-        Service.shared.updateTripState(trip: trip, state: .driverArrived) { (err, ref) in
-            self.rideActionView.config = .pickupPassenger
+        
+        if region.identifier == AnnotationType.pickup.rawValue {
+            Service.shared.updateTripState(trip: trip, state: .driverArrived) { (err, ref) in
+                self.rideActionView.config = .pickupPassenger
+            }
+        }
+        
+        if region.identifier == AnnotationType.destination.rawValue {
+            Service.shared.updateTripState(trip: trip, state: .arrivedDestination) { (err, ref) in
+                self.rideActionView.config = .endTrip
+            }
         }
     }
     
@@ -641,6 +668,16 @@ private extension HomeViewController {
 // MARK: - Uploading the trips to firebase
 
 extension HomeViewController: RideActionViewDelegate {
+    func dropoffPassenger() {
+        guard let trip = trip else { return }
+        Service.shared.updateTripState(trip: trip, state: .completed) { (err, ref) in
+            // clearing the map
+            // setting user location
+            self.clearTheMapAndRecenterItTheTheUserPosition()
+            self.animateRideActionView(shouldShow: false)
+        }
+    }
+    
     func pickupPassenger() {
         startTrip()
     }
@@ -675,8 +712,8 @@ extension HomeViewController: RideActionViewDelegate {
     }
     
     // MARK: - Creating a region and monitor it
-    func setCustomRegion(withCoordinates coordinates: CLLocationCoordinate2D) {
-        let region = CLCircularRegion(center: coordinates, radius: 100.0, identifier: "pickup")
+    fileprivate func setCustomRegion(withType type: AnnotationType, withCoordinates coordinates: CLLocationCoordinate2D) {
+        let region = CLCircularRegion(center: coordinates, radius: 100.0, identifier: type.rawValue)
         locationManager?.startMonitoring(for: region)
     }
     
@@ -711,7 +748,7 @@ extension HomeViewController: PickupControllerDelegate {
         marker.position = trip.pickUpCoordinates
         marker.map = mapView
         
-        self.setCustomRegion(withCoordinates: trip.pickUpCoordinates)
+        self.setCustomRegion(withType: .pickup, withCoordinates: trip.pickUpCoordinates)
 
         generatePolylinesAndZoomIn(toDestination: marker.position)
         mapView.animate(toLocation: marker.position)
