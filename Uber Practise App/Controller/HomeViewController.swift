@@ -149,12 +149,29 @@ extension HomeViewController{
     // MARK: - API
     
     
-    func stateTrip() {
+    func startTrip() {
         guard let trip = self.trip else { return }
         Service.shared.updateTripState(trip: trip, state: .inProgress) { (err, ref) in
             self.rideActionView.config = .tripInProgress
             self.selectedDriverPolyline.map = nil
             self.selectedDriverMarker.map = nil
+            
+            // making a new marker
+            let marker = GMSMarker()
+            marker.position = trip.destinationCoordinates
+            marker.map = self.mapView
+            
+            // new polyline
+            let path = GMSMutablePath()
+            path.add(trip.pickUpCoordinates)
+            path.add(trip.destinationCoordinates)
+            let polyline = GMSPolyline(path: path)
+            polyline.strokeColor = .systemGreen
+            polyline.strokeWidth = 4.0
+            polyline.map = self.mapView
+            
+            let bounds = GMSCoordinateBounds(path: path)
+            self.mapView.animate(with: GMSCameraUpdate.fit(bounds, with: UIEdgeInsets(top: 50.0, left: 50.0, bottom: self.rideActionViewHeight * 1.4, right: 50.0)))
         }
     }
     
@@ -624,6 +641,10 @@ private extension HomeViewController {
 // MARK: - Uploading the trips to firebase
 
 extension HomeViewController: RideActionViewDelegate {
+    func pickupPassenger() {
+        startTrip()
+    }
+    
     func cancelRide() {
         print("DEBUG:: Canceling the trip")
         Service.shared.cancelTrip { (error, reference) in

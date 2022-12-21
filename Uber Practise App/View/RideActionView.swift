@@ -11,6 +11,7 @@ import UIKit
 protocol RideActionViewDelegate: AnyObject {
     func uploadTrip()
     func cancelRide()
+    func pickupPassenger()
 }
 
 enum RideActionViewConfiguration {
@@ -251,6 +252,7 @@ extension RideActionView {
              print("DEBUG:: Handle get directions")
          case .pickup:
              print("DEBUG:: Handle pickup")
+             delegate?.pickupPassenger()
          case .dropOff:
              print("DEBUG:: Handle dropoff")
          }
