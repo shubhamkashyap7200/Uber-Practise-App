@@ -148,6 +148,16 @@ class HomeViewController: UIViewController {
 extension HomeViewController{
     // MARK: - API
     
+    
+    func stateTrip() {
+        guard let trip = self.trip else { return }
+        Service.shared.updateTripState(trip: trip, state: .inProgress) { (err, ref) in
+            self.rideActionView.config = .tripInProgress
+            self.selectedDriverPolyline.map = nil
+            self.selectedDriverMarker.map = nil
+        }
+    }
+    
     func observeCurrentTrip() {
         Service.shared.observeCurrentTrip { trip in
             self.trip = trip
@@ -428,10 +438,10 @@ extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         print("DEBUG:: Getting called Enter Region :: \(region)")
         
-        self.rideActionView.config = .pickupPassenger
-        
         guard let trip = self.trip else { return }
-        Service.shared.updateTripState(trip: trip, state: .driverArrived)
+        Service.shared.updateTripState(trip: trip, state: .driverArrived) { (err, ref) in
+            self.rideActionView.config = .pickupPassenger
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -547,6 +557,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         
         dismissLocationView { _ in
             if !self.searchQueryResult.coordinates.isEmpty {
+                // FIXME: - Here fix this bug
                 self.selectedDriverMarker.position = self.searchQueryResult.coordinates[indexPath.row]
                 self.selectedDriverMarker.icon = GMSMarker.markerImage(with: .systemBlue)
                 self.selectedDriverMarker.map = self.mapView
@@ -631,6 +642,7 @@ extension HomeViewController: RideActionViewDelegate {
     }
     
     func clearTheMapAndRecenterItTheTheUserPosition() {
+        mapView.clear()
         if let location = self.locationManager?.location?.coordinate {
             let marker = GMSMarker(position: location)
             marker.map = self.mapView
@@ -639,7 +651,6 @@ extension HomeViewController: RideActionViewDelegate {
         
         self.selectedDriverMarker.map = nil
         self.selectedDriverPolyline.map = nil
-
     }
     
     // MARK: - Creating a region and monitor it
@@ -695,5 +706,12 @@ extension HomeViewController: PickupControllerDelegate {
                 self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: passenger)
             }
         }
+    }
+}
+
+
+extension GMSMarker {
+    func giveDriverTag() -> String {
+        return "DriverTag"
     }
 }
