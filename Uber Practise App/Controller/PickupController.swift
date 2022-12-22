@@ -72,7 +72,7 @@ class PickupController: UIViewController, GMSMapViewDelegate {
     
     @objc func handleAcceptTrip() {
         print("DEBUG:: Accepting")
-        Service.shared.acceptTrip(trip: trip) { (error, reference) in
+        DriverService.shared.acceptTrip(trip: trip) { (error, reference) in
             self.delegate?.didAcceptTrip(self.trip)
         }
     }

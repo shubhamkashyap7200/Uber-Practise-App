@@ -151,12 +151,10 @@ class HomeViewController: UIViewController {
 
 // MARK: - Custom Functions
 extension HomeViewController{
-    // MARK: - API
-    
-    
+    // MARK: - Passenger API
     func startTrip() {
         guard let trip = self.trip else { return }
-        Service.shared.updateTripState(trip: trip, state: .inProgress) { (err, ref) in
+        DriverService.shared.updateTripState(trip: trip, state: .inProgress) { (err, ref) in
             self.rideActionView.config = .tripInProgress
             self.selectedDriverPolyline.map = nil
             self.selectedDriverMarker.map = nil
@@ -183,7 +181,7 @@ extension HomeViewController{
     }
     
     func observeCurrentTrip() {
-        Service.shared.observeCurrentTrip { trip in
+        PassengerService.shared.observeCurrentTrip { trip in
             self.trip = trip
             guard let state = trip.state else { return }
             guard let driverUID =  trip.driverUID else { return }
@@ -221,8 +219,19 @@ extension HomeViewController{
         }
     }
     
+    // MARK: - Driver API
+    
+    func observeCancelledTrips() {
+        guard let trip = trip else { return }
+        DriverService.shared.observeTripCancelled(trip: trip) {
+            self.animateRideActionView(shouldShow: false)
+            self.clearTheMapAndRecenterItTheTheUserPosition()
+            self.presentAlertController(withTitle: "Oops !!!", withMessage: "The passenger has decided to cancel the trip. \nPress Ok to continue ...")
+        }
+    }
+    
     func observeTrips() {
-        Service.shared.observeDrivers { (trip) in
+         DriverService.shared.observeDrivers { (trip) in
             self.trip = trip
         }
     }
@@ -230,13 +239,11 @@ extension HomeViewController{
     func fetchDrivers() {
         var driverArray: [DriverMarker] = []
         guard let location = locationManager?.location else { print("Location is nil"); return }
-        Service.shared.fetchDrivers(location: location) { (driver) in
+        PassengerService.shared.fetchDrivers(location: location) { (driver) in
             
             // MARK: - Adding Markers
             guard let location = driver.location?.coordinate else { print("Nil value here"); return }
             let driverMarker = DriverMarker(location: location, uid: driver.uid, title: driver.fullname)
-//            driverArray.append(driverMarker)
-            print("DEBUG:: \(driverArray)")
             
             // MARK: - Checking if driver already added
             var driverIsVisible: Bool {
@@ -266,6 +273,7 @@ extension HomeViewController{
 //        mapView.setMinZoom(1, maxZoom: 20)
     }
     
+    // MARK: - Shared API
     func checkIfUserIsLoggedIn() {
         let currentUser = Auth.auth().currentUser // Getting current user
         if currentUser?.uid == nil {
@@ -476,13 +484,13 @@ extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
         guard let trip = self.trip else { return }
         
         if region.identifier == AnnotationType.pickup.rawValue {
-            Service.shared.updateTripState(trip: trip, state: .driverArrived) { (err, ref) in
+            DriverService.shared.updateTripState(trip: trip, state: .driverArrived) { (err, ref) in
                 self.rideActionView.config = .pickupPassenger
             }
         }
         
         if region.identifier == AnnotationType.destination.rawValue {
-            Service.shared.updateTripState(trip: trip, state: .arrivedDestination) { (err, ref) in
+            DriverService.shared.updateTripState(trip: trip, state: .arrivedDestination) { (err, ref) in
                 self.rideActionView.config = .endTrip
             }
         }
@@ -670,7 +678,7 @@ private extension HomeViewController {
 extension HomeViewController: RideActionViewDelegate {
     func dropoffPassenger() {
         guard let trip = trip else { return }
-        Service.shared.updateTripState(trip: trip, state: .completed) { (err, ref) in
+        DriverService.shared.updateTripState(trip: trip, state: .completed) { (err, ref) in
             // clearing the map
             // setting user location
             self.clearTheMapAndRecenterItTheTheUserPosition()
@@ -723,7 +731,7 @@ extension HomeViewController: RideActionViewDelegate {
         
         shouldPresentLoadingView(true, message: "Finding you a ride..")
         
-        Service.shared.uploadTripsToFirebase(startCoords: startCoords, endCoords: endCoords) { (err, ref) in
+        PassengerService.shared.uploadTripsToFirebase(startCoords: startCoords, endCoords: endCoords) { (err, ref) in
             if let error = err {
                 print("DEBUG:: \(error.localizedDescription)")
                 return
@@ -753,11 +761,7 @@ extension HomeViewController: PickupControllerDelegate {
         generatePolylinesAndZoomIn(toDestination: marker.position)
         mapView.animate(toLocation: marker.position)
         
-        Service.shared.observeTripCancelled(trip: trip) {
-            self.animateRideActionView(shouldShow: false)
-            self.clearTheMapAndRecenterItTheTheUserPosition()
-            self.presentAlertController(withTitle: "Oops !!!", withMessage: "The passenger has decided to cancel the trip. \nPress Ok to continue ...")
-        }
+        observeCancelledTrips()
         
         self.dismiss(animated: true) {
             Service.shared.fetchUserData(uid: trip.passengeerUID) { (passenger) in
