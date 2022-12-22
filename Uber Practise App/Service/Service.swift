@@ -9,6 +9,7 @@ import Firebase
 import FirebaseAuth
 import GeoFire
 
+// MARK: - Databse Ref
 let DB_REF = Database.database().reference()
 let REF_USERS = DB_REF.child("users")
 let REF_DRIVER_LOCATION = DB_REF.child("driver-locations")
@@ -28,7 +29,6 @@ struct DriverService {
             completion(trip)
         }
     }
-    
     
     func observeTripCancelled(trip: Trip, completion: @escaping() -> Void) {
         REF_TRIPS.child(trip.passengeerUID).observeSingleEvent(of: .childRemoved) { _ in
@@ -58,12 +58,25 @@ struct DriverService {
             REF_TRIPS.child(trip.passengeerUID).removeAllObservers()
         }
     }
+    
+    func updateDriverLocation(location: CLLocation) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATION)
+        geofire.setLocation(location, forKey: uid)
+    }
+
 
 }
 
 struct PassengerService {
     static let shared = PassengerService()
     let geofireRadius: Double = 50.0
+
+    func cancelTrip(completion: @escaping(Error?, DatabaseReference) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        REF_TRIPS.child(uid).removeValue(completionBlock: completion)
+    }
 
     
     // MARK: - Fetch Drivers
@@ -107,8 +120,11 @@ struct PassengerService {
             completetion(trip)
         }
     }
+
 }
 
+
+// MARK: - Shared Service
 struct Service {
     // MARK: - Properties
     static let shared = Service()
@@ -124,17 +140,4 @@ struct Service {
             completion(user)
         }
     }
-    
-    func cancelTrip(completion: @escaping(Error?, DatabaseReference) -> Void) {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        REF_TRIPS.child(uid).removeValue(completionBlock: completion)
-    }
-    
-    func updateDriverLocation(location: CLLocation) {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        
-        let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATION)
-        geofire.setLocation(location, forKey: uid)
-    }
-    
 }

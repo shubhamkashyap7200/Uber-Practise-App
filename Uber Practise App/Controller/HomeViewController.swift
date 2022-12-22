@@ -221,8 +221,7 @@ extension HomeViewController{
     
     // MARK: - Driver API
     
-    func observeCancelledTrips() {
-        guard let trip = trip else { return }
+    func observeCancelledTrips(trip: Trip) {
         DriverService.shared.observeTripCancelled(trip: trip) {
             self.animateRideActionView(shouldShow: false)
             self.clearTheMapAndRecenterItTheTheUserPosition()
@@ -507,7 +506,7 @@ extension HomeViewController: GMSMapViewDelegate, CLLocationManagerDelegate {
         guard let user = self.user else { return }
         guard user.accountType == .driver else { return }
         
-        Service.shared.updateDriverLocation(location: currentLocation)
+        DriverService.shared.updateDriverLocation(location: currentLocation)
     }
 }
 
@@ -692,7 +691,7 @@ extension HomeViewController: RideActionViewDelegate {
     
     func cancelRide() {
         print("DEBUG:: Canceling the trip")
-        Service.shared.cancelTrip { (error, reference) in
+        PassengerService.shared.cancelTrip { (error, reference) in
             if let error = error {
                 print("DEBUG: Error while canceling the trip is \(error.localizedDescription)")
                 return
@@ -761,7 +760,7 @@ extension HomeViewController: PickupControllerDelegate {
         generatePolylinesAndZoomIn(toDestination: marker.position)
         mapView.animate(toLocation: marker.position)
         
-        observeCancelledTrips()
+        observeCancelledTrips(trip: trip)
         
         self.dismiss(animated: true) {
             Service.shared.fetchUserData(uid: trip.passengeerUID) { (passenger) in
