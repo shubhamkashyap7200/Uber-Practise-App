@@ -54,8 +54,13 @@ private enum AnnotationType: String {
     case destination
 }
 
+protocol HomeViewControllerDelegate: AnyObject {
+    func handleMenuToggle()
+}
+
 class HomeViewController: UIViewController {
     // MARK: - Properties
+    weak var delegate: HomeViewControllerDelegate?
     private let locationManager = LocationHandler.shared.locationManager
     private var mapView: GMSMapView!
     let marker = GMSMarker()
@@ -451,7 +456,8 @@ extension HomeViewController{
     @objc func handleActionButton() {
         switch actionButtonConfig {
         case .showView:
-            print("DEBUG:: Show view")
+            print("DEBUG:: Show Menu")
+            delegate?.handleMenuToggle()
         case .dismissActionView:
             print("DEBUG:: dismiss View")
             UIView.animate(withDuration: 0.3) {
