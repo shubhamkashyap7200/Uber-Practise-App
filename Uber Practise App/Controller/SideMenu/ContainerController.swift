@@ -12,6 +12,11 @@ class ContainerController: UIViewController {
     private let homeController = HomeViewController()
     private let menuController = MenuController()
     private final var isShowingSideMenu = false
+    private var user: User? {
+        didSet {
+            
+        }
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
