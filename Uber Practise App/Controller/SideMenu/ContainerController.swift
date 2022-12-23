@@ -127,7 +127,7 @@ class ContainerController: UIViewController {
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut ,animations: {
                 self.homeController.view.frame.origin.x = 0.0
                 self.deepShadeView.alpha = 0.0
-            }, completion: nil)
+            }, completion: completion)
         }
         
         animateStatusBar()
@@ -164,6 +164,8 @@ extension ContainerController: HomeViewControllerDelegate {
 extension ContainerController: MenuControllerDelegate {
     func didSelectOption(option: MenuOptions) {
         isShowingSideMenu.toggle()
+        print("DEBUG:: PRESSED :: \(isShowingSideMenu)")
+
         animateMenu(shouldExpand: isShowingSideMenu) { _ in
             switch option {
             case .yourTrips:
@@ -171,6 +173,7 @@ extension ContainerController: MenuControllerDelegate {
             case .settings:
                 break
             case .logout:
+                print("DEBUG:: PRESSED")
                 let alert = UIAlertController(title: nil, message: "Are you sure you want to logout ?", preferredStyle: .actionSheet)
                 alert.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
                     self.signOut()
