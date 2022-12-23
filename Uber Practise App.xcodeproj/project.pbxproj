@@ -31,6 +31,7 @@
 		51CF1285294259CF00FF3C36 /* SearchQueryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CF1284294259CF00FF3C36 /* SearchQueryResult.swift */; };
 		51E74E6C29365A01009A2105 /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E74E6B29365A01009A2105 /* AuthButton.swift */; };
 		51EAABD22956385B007B0D6B /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EAABD12956385B007B0D6B /* SettingsController.swift */; };
+		51EAABD429563E2D007B0D6B /* UserInfoHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EAABD329563E2D007B0D6B /* UserInfoHeader.swift */; };
 		51FACDEB2935271700A0D5FC /* SignUpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FACDEA2935271700A0D5FC /* SignUpController.swift */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +64,7 @@
 		51CF1284294259CF00FF3C36 /* SearchQueryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchQueryResult.swift; sourceTree = "<group>"; };
 		51E74E6B29365A01009A2105 /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		51EAABD12956385B007B0D6B /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
+		51EAABD329563E2D007B0D6B /* UserInfoHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoHeader.swift; sourceTree = "<group>"; };
 		51FACDEA2935271700A0D5FC /* SignUpController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -151,6 +153,7 @@
 				51931CB2293EE60900169E24 /* LocationCell.swift */,
 				51263A222947BC1700741BD8 /* RideActionView.swift */,
 				5138FB7A2954F73A00FABCA2 /* CustomMenuHeader.swift */,
+				51EAABD329563E2D007B0D6B /* UserInfoHeader.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 				5123ECA92933F0C7002735C4 /* SceneDelegate.swift in Sources */,
 				51931CB3293EE60900169E24 /* LocationCell.swift in Sources */,
 				513EADB3293F136500776586 /* LocationHandler.swift in Sources */,
+				51EAABD429563E2D007B0D6B /* UserInfoHeader.swift in Sources */,
 				51728EAB2936801D002772FB /* HomeViewController.swift in Sources */,
 				5138FB792954ED6800FABCA2 /* ContainerController.swift in Sources */,
 				513EADB1293EFB9100776586 /* User.swift in Sources */,

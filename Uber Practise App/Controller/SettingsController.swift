@@ -11,8 +11,25 @@ private let reuseIdentifier = "LocationCell"
 
 class SettingsController: UITableViewController {
     // MARK: - Properties
+    private let user: User
+    
+    private lazy var userInfoHeaderView: UserInfoHeader = {
+        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 100)
+        let view = UserInfoHeader(user: user, frame: view.frame)
+        return view
+    }()
     
     // MARK: - Lifecycle
+    
+    init(user: User) {
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,6 +42,7 @@ class SettingsController: UITableViewController {
         tableView.rowHeight = 60.0
         tableView.backgroundColor = .white
         tableView.register(LocationCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.tableHeaderView = userInfoHeaderView
     }
     
     func configureNavigationBar() {
