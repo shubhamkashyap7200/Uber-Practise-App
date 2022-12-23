@@ -9,6 +9,13 @@ import UIKit
 
 class LocationCell: UITableViewCell {
     // MARK: - Properties
+    var type: LocationType? {
+        didSet {
+            titleLabel.text = type?.description
+            subtitleLabel.text = type?.subtitle
+        }
+    }
+    
     let titleLabel: UILabel = { () -> UILabel in
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14.0)
@@ -24,7 +31,6 @@ class LocationCell: UITableViewCell {
         return label
     }()
 
-    
     
     // MARK: - Lifecycles
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
