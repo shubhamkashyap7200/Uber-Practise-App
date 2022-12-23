@@ -11,14 +11,26 @@ private let reuseIdentifier = "MenuCell"
 
 class MenuController: UITableViewController {
     // MARK: - Properties
+    private let user: User
+    
     private lazy var menuHeader: CustomMenuHeader = { () -> CustomMenuHeader in
-        let frame = CGRect(x: 0, y: 0, width: self.view.frame.width - 80.0, height: 140.0)
-        let view = CustomMenuHeader(frame: frame)
+        let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 140.0)
+        let view = CustomMenuHeader(user: user, frame: frame)
         return view
     }()
     
     
     // MARK: - Lifecycle
+    
+    init(user: User) {
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

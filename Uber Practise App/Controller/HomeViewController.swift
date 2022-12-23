@@ -81,7 +81,7 @@ class HomeViewController: UIViewController {
 
     //    var location: CLLocation!
     
-    private var user: User? {
+    public var user: User? {
         didSet {
             locationInputView.user = user
             if user?.accountType == .passenger {
@@ -216,14 +216,7 @@ extension HomeViewController{
             }
         }
     }
-    
-    func fetchUserData() {
-        guard let uid = Auth.auth().currentUser?.uid else { print("Current uid is nil"); return }
-        Service.shared.fetchUserData(uid: uid) { (user) in
-            self.user = user
-        }
-    }
-    
+        
     // MARK: - Driver API
     
     func observeCancelledTrips(trip: Trip) {
@@ -300,8 +293,6 @@ extension HomeViewController{
     
     func configureAll() {
         configureUI()
-        fetchUserData()
-//        fetchDrivers()
     }
     
     func signOut() {

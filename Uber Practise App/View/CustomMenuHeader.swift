@@ -9,12 +9,14 @@ import UIKit
 
 class CustomMenuHeader: UIView {
     // MARK: - Properties
-    var user: User? {
-        didSet {
-            fullNameLabel.text = user?.fullname
-            emailAddressLabel.text = user?.email
-        }
-    }
+    private let user: User
+    
+//    var user: User? {
+//        didSet {
+//            fullNameLabel.text = user?.fullname
+//            emailAddressLabel.text = user?.email
+//        }
+//    }
     
     private let profileImageView: UIImageView = { ()-> UIImageView in
         let imageView = UIImageView()
@@ -23,30 +25,37 @@ class CustomMenuHeader: UIView {
         return imageView
     }()
     
-    private let fullNameLabel: UILabel = {() -> UILabel in
+    private lazy var fullNameLabel: UILabel = {() -> UILabel in
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16.0)
         label.textColor = .white
-        label.text = "Shubham Kashyap"
+        label.text = user.fullname
         return label
     }()
     
-    private let emailAddressLabel: UILabel = {() -> UILabel in
+    private lazy var emailAddressLabel: UILabel = {() -> UILabel in
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14.0)
         label.textColor = .lightGray
-        label.text = "shubhamKashyap7200@gmail.com"
+        label.text = user.email
         return label
     }()
 
     
     // MARK: - Lifecycle
-    override init(frame: CGRect) {
+    init(user: User, frame: CGRect) {
+        self.user = user
         super.init(frame: frame)
+        
         backgroundColor = .backgroundColor
+        layer.shadowRadius = 5.0
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.5
+        layer.shadowOffset = CGSize(width: 0.2, height: 0.2)
+
         
         addSubview(profileImageView)
-        profileImageView.customAnchor(top: topAnchor, left: leftAnchor, paddingTop: 4.0, paddingLeft: 12.0, width: 64.0, height: 64.0)
+        profileImageView.customAnchor(top: topAnchor, left: leftAnchor, paddingTop: 12.0, paddingLeft: 12.0, width: 64.0, height: 64.0)
         profileImageView.layer.cornerRadius = 64.0 / 2
         
         let stackView = UIStackView(arrangedSubviews: [fullNameLabel, emailAddressLabel])
@@ -55,6 +64,7 @@ class CustomMenuHeader: UIView {
         stackView.axis = .vertical
         stackView.spacing = 4.0
         stackView.customCenterY(inView: profileImageView, leftAnchor: profileImageView.rightAnchor, paddingLeft: 12.0)
+
     }
     
     required init?(coder: NSCoder) {
