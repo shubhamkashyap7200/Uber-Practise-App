@@ -30,6 +30,7 @@
 		51931CB3293EE60900169E24 /* LocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51931CB2293EE60900169E24 /* LocationCell.swift */; };
 		51CF1285294259CF00FF3C36 /* SearchQueryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CF1284294259CF00FF3C36 /* SearchQueryResult.swift */; };
 		51E74E6C29365A01009A2105 /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E74E6B29365A01009A2105 /* AuthButton.swift */; };
+		51EAABD22956385B007B0D6B /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EAABD12956385B007B0D6B /* SettingsController.swift */; };
 		51FACDEB2935271700A0D5FC /* SignUpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FACDEA2935271700A0D5FC /* SignUpController.swift */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +62,7 @@
 		51931CB2293EE60900169E24 /* LocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationCell.swift; sourceTree = "<group>"; };
 		51CF1284294259CF00FF3C36 /* SearchQueryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchQueryResult.swift; sourceTree = "<group>"; };
 		51E74E6B29365A01009A2105 /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
+		51EAABD12956385B007B0D6B /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		51FACDEA2935271700A0D5FC /* SignUpController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -135,6 +137,7 @@
 				5138FB742954ED0A00FABCA2 /* Authentication */,
 				51728EAA2936801D002772FB /* HomeViewController.swift */,
 				517553FE294AE5BE000D8452 /* PickupController.swift */,
+				51EAABD12956385B007B0D6B /* SettingsController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				513EADB1293EFB9100776586 /* User.swift in Sources */,
 				513EADAF293EF1F100776586 /* Service.swift in Sources */,
 				51263A232947BC1700741BD8 /* RideActionView.swift in Sources */,
+				51EAABD22956385B007B0D6B /* SettingsController.swift in Sources */,
 				51CF1285294259CF00FF3C36 /* SearchQueryResult.swift in Sources */,
 				519310F12948A68200A68ABA /* Trip.swift in Sources */,
 				51915B31293E559D00B1FF15 /* LocationInputActivationView.swift in Sources */,
