@@ -119,16 +119,6 @@ class HomeViewController: UIViewController {
         return btn
     }()
 
-    
-    private let signOutButton: UIButton = { () -> UIButton in
-        let btn = UIButton(type: .system)
-        btn.setTitle("Sign out", for: .normal)
-        btn.setTitleColor(.white, for: .normal)
-        btn.backgroundColor = .systemBlue
-        btn.addTarget(self, action: #selector(handleSignOut), for: .touchUpInside)
-        return btn
-    }()
-    
     // MARK: - Indicator View
     private let inputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
@@ -137,19 +127,11 @@ class HomeViewController: UIViewController {
     // MARK: - Life cycle functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        checkIfUserIsLoggedIn()
-        
-//        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
-//        tap.cancelsTouchesInView = false
-//        view.addGestureRecognizer(tap)
-        
-        print("DEBUG:: USER TYPE \(user?.accountType)")
+        configureUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        guard let trip = trip else { return }
-        print("DEBUG:: Trip state is \(trip.state)")
+        super.viewWillAppear(animated)
     }
 
 }
@@ -269,46 +251,7 @@ extension HomeViewController{
 //        mapView.animate(with: update)
 //        mapView.setMinZoom(1, maxZoom: 20)
     }
-    
-    // MARK: - Shared API
-    func checkIfUserIsLoggedIn() {
-        let currentUser = Auth.auth().currentUser // Getting current user
-        if currentUser?.uid == nil {
-            // Navigating to login controller
-            DispatchQueue.main.async {
-                let nav = UINavigationController(rootViewController: LoginController())
-                if #available(iOS 13.0, *) {
-                    nav.isModalInPresentation = true
-                }
-                nav.modalPresentationStyle = .fullScreen
-                self.present(nav, animated: true, completion: nil)
-            }
-        }
-        else {
-            print("DEBUG: User is LOGGED in...")
-            print("DEBUG: User id is ::: \(currentUser?.uid)")
-            configureAll()
-        }
-    }
-    
-    func configureAll() {
-        configureUI()
-    }
-    
-    func signOut() {
-        // Error Handling with do catch block
-        do {
-            try Auth.auth().signOut()
-            let navLogin = UINavigationController(rootViewController: LoginController())
-//            navLogin.modalTransitionStyle = .partialCurl
-            navLogin.modalPresentationStyle = .fullScreen
-            present(navLogin, animated: true)
-        }
-        catch {
-            print("DEBUG: Error in Signout is here ::: \(error.localizedDescription)")
-        }
-    }
-    
+        
     // MARK: - Configure UI
     func configureUI() {
         setupMapView()
@@ -317,15 +260,9 @@ extension HomeViewController{
         // MARK: - Adding Action Button
         view.addSubview(actionButton)
         actionButton.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, paddingTop: 16.0, paddingLeft: 20.0, width: 30.0, height: 30.0)
-        
                 
         // MARK: - TableView
         configureTableView()
-        
-        // MARK: - Sign out Button
-        view.addSubview(signOutButton)
-        signOutButton.customAnchor(bottom: view.bottomAnchor, right: view.rightAnchor)
-        
     }
     
     func configureLocationInputActivationView() {
@@ -377,12 +314,7 @@ extension HomeViewController{
             actionButtonConfig = .dismissActionView
         }
     }
-    
-    @objc func handleSignOut() {
-        print("DEBUG:: Signingout")
-        signOut()
-    }
-    
+        
     
     // MARK: - Configuring Google Maps
     func setupMapView() {

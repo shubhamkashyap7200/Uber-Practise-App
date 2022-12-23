@@ -79,7 +79,6 @@ class LoginController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        print("Entry")
         configureUI()
     }
     
@@ -113,10 +112,9 @@ extension LoginController {
             print("Succesfully signed the user in")
             
             DispatchQueue.main.async {
-                let homeController = HomeViewController()
-                homeController.configureAll()
+                let controller = ContainerController()
+                controller.configureAll()
                 self?.dismiss(animated: true, completion: nil)
-//                self?.navigationController?.pushViewController(homeController, animated: true)
             }
         }
     }
