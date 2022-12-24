@@ -27,6 +27,19 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private lazy var circularProgressView: CircularProgressView = { () -> CircularProgressView in
+        let cp = CircularProgressView(frame: .zero)
+        
+        cp.addSubview(mapView)
+        mapView.setDimensions(height: 268.0, width: 268.0)
+        mapView.layer.cornerRadius = 268.0 / 2
+        mapView.customCenterX(inView: cp)
+        mapView.customCenterY(inView: cp, constant: 32.0)
+        
+        
+        return cp
+    }()
+    
     private let pickupLabel: UILabel = { () -> UILabel in
         let label = UILabel()
         label.text = "Would you like to pickup this passenger?"
@@ -85,10 +98,15 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         view.backgroundColor = .backgroundColor
         view.addSubview(cancelButton)
         cancelButton.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingLeft: 16.0, width: 32.0, height: 32.0)
+        
+        view.addSubview(circularProgressView)
+        circularProgressView.setDimensions(height: 360.0, width: 360.0)
+        circularProgressView.customCenterX(inView: view)
+        circularProgressView.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32.0)
         configureMapView()
         
         view.addSubview(pickupLabel)
-        pickupLabel.customAnchor(top: mapView.bottomAnchor, paddingTop: 16.0)
+        pickupLabel.customAnchor(top: circularProgressView.bottomAnchor, paddingTop: 32.0)
         pickupLabel.customCenterX(inView: view)
         
         view.addSubview(acceptTripButton)
@@ -98,7 +116,6 @@ class PickupController: UIViewController, GMSMapViewDelegate {
     func configureMapView() {
         view.addSubview(mapView)
         mapView.delegate = self
-        mapView.setDimensions(height: 270.0, width: 270.0)
         
         let camera = GMSCameraPosition.camera(withLatitude: trip.pickUpCoordinates.latitude, longitude: trip.pickUpCoordinates.longitude, zoom: 17.0)
         mapView.camera = camera
@@ -107,10 +124,5 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         let marker = GMSMarker(position: trip.pickUpCoordinates)
         marker.map = mapView
         mapView.selectedMarker = marker
-
-                
-        mapView.layer.cornerRadius = 270 / 2
-        mapView.customCenterX(inView: view)
-        mapView.customAnchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32.0)
     }
 }

@@ -260,6 +260,9 @@ extension HomeViewController{
     
     func configureSavedUserLocations() {
         guard let user = user else { return }
+//        searchResultsTitleOfHomeAndWork.removeAll()
+//        searchResultsAddressOfHomeAndWork.removeAll()
+        
         if let homeLocation = user.homeLocation {
             geocodeAddressString(address: homeLocation)
         }
