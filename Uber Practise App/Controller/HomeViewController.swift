@@ -74,6 +74,9 @@ class HomeViewController: UIViewController {
     var searchResultsTitle: [String] = []
     var searchResultsAddress: [String] = []
     var searchResultsCoordinates: [CLLocation] = []
+    var searchResultsTitleOfHomeAndWork: [String] = []
+    var searchResultsAddressOfHomeAndWork: [String] = []
+    
     var searchQueryResult = SearchQueryResult()
     let selectedDriverMarker = GMSMarker()
     let selectedDriverPolyline: GMSPolyline = GMSPolyline()
@@ -88,6 +91,7 @@ class HomeViewController: UIViewController {
                 fetchDrivers()
                 configureLocationInputActivationView()
                 observeCurrentTrip()
+                configureSavedUserLocations()
             } else {
                 observeTrips()
             }
@@ -253,6 +257,28 @@ extension HomeViewController{
     }
         
     // MARK: - Configure UI
+    
+    func configureSavedUserLocations() {
+        guard let user = user else { return }
+        if let homeLocation = user.homeLocation {
+            geocodeAddressString(address: homeLocation)
+        }
+        
+        if let workLocation = user.workLocation {
+            geocodeAddressString(address: workLocation)
+        }
+    }
+    
+    func geocodeAddressString(address: String) {
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address) { placemarks, error in
+            guard let clPlacemark = placemarks?.first else { return }
+            self.searchResultsTitleOfHomeAndWork.append(clPlacemark.name ?? "Nil Here")
+            self.searchResultsAddressOfHomeAndWork.append(clPlacemark.description ?? "Nil Here")
+            self.tableView.reloadData()
+        }
+    }
+    
     func configureUI() {
         setupMapView()
         configureRideActionView()
@@ -507,7 +533,7 @@ extension HomeViewController: LocationInputViewDelegate {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Test"
+        return section == 0 ? "Saved Locations": "Search Results"
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -515,11 +541,19 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (section == 0) ? 2 : searchQueryResult.name.count
+        return (section == 0) ? searchResultsTitleOfHomeAndWork.count : searchQueryResult.name.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! LocationCell
+        
+        if indexPath.section == 0 {
+            if !searchResultsTitleOfHomeAndWork.isEmpty && !searchResultsAddressOfHomeAndWork.isEmpty {
+                cell.titleLabel.text = searchResultsTitleOfHomeAndWork[indexPath.row]
+                cell.subtitleLabel.text = searchResultsAddressOfHomeAndWork[indexPath.row]
+            }
+        }
+
         
         if indexPath.section == 1 {
         
