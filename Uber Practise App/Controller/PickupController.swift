@@ -28,14 +28,14 @@ class PickupController: UIViewController, GMSMapViewDelegate {
     }
     
     private lazy var circularProgressView: CircularProgressView = { () -> CircularProgressView in
-        let cp = CircularProgressView(frame: .zero)
+        let frame = CGRect(x: 0, y: 0, width: 360.0, height: 360.0)
+        let cp = CircularProgressView(frame: frame)
         
         cp.addSubview(mapView)
-        mapView.setDimensions(height: 268.0, width: 268.0)
-        mapView.layer.cornerRadius = 268.0 / 2
         mapView.customCenterX(inView: cp)
         mapView.customCenterY(inView: cp, constant: 32.0)
-        
+        mapView.setDimensions(height: 268.0, width: 268.0)
+        mapView.layer.cornerRadius = 268.0 / 2
         
         return cp
     }()
@@ -75,6 +75,7 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         super.viewDidLoad()
         print("DEBUG:: Trip passenger uid is :: \(trip.passengeerUID)")
         configureUI()
+        self.perform(#selector(animateProgress), with: nil, afterDelay: 0.5)
     }
         
     // MARK: - Selectors
@@ -87,6 +88,13 @@ class PickupController: UIViewController, GMSMapViewDelegate {
         print("DEBUG:: Accepting")
         DriverService.shared.acceptTrip(trip: trip) { (error, reference) in
             self.delegate?.didAcceptTrip(self.trip)
+        }
+    }
+    
+    @objc func animateProgress() {
+        circularProgressView.animatePulsatingLayer()
+        circularProgressView.setProgressWithAnimation(withDuration: 5.0, withValue: 0) {
+            self.dismiss(animated: true, completion: nil)
         }
     }
 
@@ -114,7 +122,6 @@ class PickupController: UIViewController, GMSMapViewDelegate {
     }
     
     func configureMapView() {
-        view.addSubview(mapView)
         mapView.delegate = self
         
         let camera = GMSCameraPosition.camera(withLatitude: trip.pickUpCoordinates.latitude, longitude: trip.pickUpCoordinates.longitude, zoom: 17.0)

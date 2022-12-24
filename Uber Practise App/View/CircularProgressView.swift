@@ -55,7 +55,13 @@ class CircularProgressView: UIView {
     }
     
     func animatePulsatingLayer() {
-        
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        animation.toValue = 1.25
+        animation.duration = 0.8
+        animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        animation.autoreverses = true
+        animation.repeatCount = Float.infinity
+        pulsatingLayer.add(animation, forKey: "pulsing")
     }
     
     func setProgressWithAnimation(withDuration duration: TimeInterval, withValue value: Float, completion: @escaping() -> Void) {
