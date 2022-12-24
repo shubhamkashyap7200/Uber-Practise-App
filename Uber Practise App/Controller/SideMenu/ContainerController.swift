@@ -20,6 +20,7 @@ class ContainerController: UIViewController {
     private var user: User? {
         didSet {
             guard let user = user else { return }
+            print("DEBUG:: user home location is \(user.homeLocation)")
             homeController.user = user
             configureMenuController(withUser: user)
         }
@@ -173,6 +174,7 @@ extension ContainerController: MenuControllerDelegate {
             case .settings:
                 guard let user = self.user else { return }
                 let controller = SettingsController(user: user)
+                controller.delegate = self
                 let nav = UINavigationController(rootViewController: controller)
                 nav.modalPresentationStyle = .fullScreen
                 self.present(nav, animated: true, completion: nil)
@@ -190,5 +192,13 @@ extension ContainerController: MenuControllerDelegate {
 
             }
         }
+    }
+}
+
+// MARK: - Settings controller delegate
+
+extension ContainerController: SettingsControllerDelegate {
+    func updateUser(_ controller: SettingsController) {
+        self.user = controller.user
     }
 }

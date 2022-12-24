@@ -9,12 +9,6 @@ import UIKit
 
 class LocationCell: UITableViewCell {
     // MARK: - Properties
-    var type: LocationType? {
-        didSet {
-            titleLabel.text = type?.description
-            subtitleLabel.text = type?.subtitle
-        }
-    }
     
     let titleLabel: UILabel = { () -> UILabel in
         let label = UILabel()

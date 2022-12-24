@@ -18,6 +18,8 @@ struct User {
     var accountType: AccountType!
     var location: CLLocation?
     let uid: String
+    var homeLocation: String?
+    var workLocation: String?
     
     // MARK: - Methods
     init(uid: String, dictionary: [String: Any]) {
@@ -27,6 +29,14 @@ struct User {
         
         if let index = dictionary["accountTypeIndex"] as? Int {
             self.accountType = AccountType(rawValue: index)
+        }
+        
+        if let home = dictionary["homeLocation"] as? String {
+            self.homeLocation = home
+        }
+        
+        if let work = dictionary["workLocation"] as? String {
+            self.workLocation = work
         }
     }
 }

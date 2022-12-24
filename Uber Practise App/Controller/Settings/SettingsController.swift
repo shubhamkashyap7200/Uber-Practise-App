@@ -32,11 +32,18 @@ enum LocationType: Int, CaseIterable, CustomStringConvertible {
     case work
 }
 
+protocol SettingsControllerDelegate: AnyObject {
+    func updateUser(_ controller: SettingsController)
+}
+
 class SettingsController: UITableViewController {
     // MARK: - Properties
-    private let user: User
+    weak var delegate: SettingsControllerDelegate?
+    var user: User
+    var userInfoUpdated: Bool = false
+    private let locationManager = LocationHandler.shared.locationManager
     
-    private lazy var userInfoHeaderView: UserInfoHeader = {
+    private lazy var userInfoHeaderView: UserInfoHeader = { () -> UserInfoHeader in
         let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 100)
         let view = UserInfoHeader(user: user, frame: view.frame)
         return view
@@ -61,17 +68,28 @@ class SettingsController: UITableViewController {
     }
 
     // MARK: - Helper Functions
+    func locationText(forType type: LocationType) -> String {
+        switch type {
+        case .home:
+            return user.homeLocation ?? type.subtitle
+        case .work:
+            return user.workLocation ?? type.subtitle
+        }
+    }
+    
     func configureTableView() {
         tableView.rowHeight = 60.0
         tableView.backgroundColor = .white
-        tableView.register(LocationCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.tableHeaderView = userInfoHeaderView
+        tableView.tableFooterView = UIView()
+        tableView.register(LocationCell.self, forCellReuseIdentifier: reuseIdentifier)
     }
     
     func configureNavigationBar() {
         navigationController?.navigationBar.barTintColor = .backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barStyle = .black
         navigationItem.title = "Settings"
         
@@ -80,7 +98,11 @@ class SettingsController: UITableViewController {
     
     // MARK: - Selectors
     @objc func dismissButtonAction() {
-        self.dismiss(animated: true, completion: nil)
+        if userInfoUpdated {
+            delegate?.updateUser(self)
+        }
+
+        dismiss(animated: true, completion: nil)
     }
 
 }
@@ -95,14 +117,15 @@ extension SettingsController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as! LocationCell
         guard let type = LocationType(rawValue: indexPath.row) else { return cell }
-        cell.type = type
+        cell.titleLabel.text = type.description
+        cell.subtitleLabel.text = locationText(forType: type)
         return cell
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        view.backgroundColor = .black
-            
+        view.backgroundColor = .backgroundColor
+        
         let title = UILabel()
         title.font = UIFont.systemFont(ofSize: 16.0)
         title.text = "Favorites"
@@ -119,6 +142,36 @@ extension SettingsController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let type = LocationType(rawValue: indexPath.row) else { return }
-        print("DEBUG:: Type is \(type.description)")
+        guard let location = locationManager?.location else { return }
+        
+        let controller = AddLocationController(type: type, location: location)
+        controller.modalPresentationStyle = .fullScreen
+        controller.delegate = self
+        navigationController?.pushViewController(controller, animated: true)
+    }
+}
+
+// MARK: - AddLocationControllerDelegate
+
+extension SettingsController: AddLocationControllerDelegate {
+    func updateLocation(locationString: String, type: LocationType) {
+        PassengerService.shared.saveLocation(locationString: locationString, type: type) { (err, ref) in
+            if let err = err {
+                print("DEBUG:: Error while saving location is :: \(err.localizedDescription)")
+                return
+            }
+            
+            self.navigationController?.popViewController(animated: true)
+            self.userInfoUpdated = true
+            
+            switch type {
+            case .home:
+                self.user.homeLocation = locationString
+            case .work:
+                self.user.workLocation = locationString
+            }
+            
+            self.tableView.reloadData()
+        }
     }
 }

@@ -558,12 +558,10 @@ private extension HomeViewController {
         var resultsTitle = [String]()
         var resultsAddress = [String]()
         var resultsCoords = [CLLocationCoordinate2D]()
+        guard let locationManager = locationManager?.location else { return }
         
         let request = MKLocalSearch.Request()
-        if let coord = locationManager?.location?.coordinate {
-            request.region = MKCoordinateRegion(center: coord, latitudinalMeters: 250.0, longitudinalMeters: 250.0)
-            print("DEBUG:: PP \(request.region)")
-        }
+        request.region = MKCoordinateRegion(center: locationManager.coordinate, latitudinalMeters: 2000.0, longitudinalMeters: 2000.0)
         print("DEBUG:: RR \(request.region)")
 
         request.naturalLanguageQuery = naturalLanaguageQuery
