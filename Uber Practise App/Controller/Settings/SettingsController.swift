@@ -131,7 +131,7 @@ extension SettingsController {
         title.text = "Favorites"
         title.textColor = .white
         view.addSubview(title)
-        title.customCenterY(inView: view, leftAnchor: view.leftAnchor)
+        title.customCenterY(inView: view, leftAnchor: view.leftAnchor, paddingLeft: 16.0)
         
         return view
     }

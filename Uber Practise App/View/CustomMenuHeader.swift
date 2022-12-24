@@ -10,19 +10,22 @@ import UIKit
 class CustomMenuHeader: UIView {
     // MARK: - Properties
     private let user: User
+        
+    private lazy var intialLabel: UILabel = { () -> UILabel in
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 42.0)
+        label.textColor = .white
+        label.text = user.firstIntial
+        return label
+    }()
     
-//    var user: User? {
-//        didSet {
-//            fullNameLabel.text = user?.fullname
-//            emailAddressLabel.text = user?.email
-//        }
-//    }
-    
-    private let profileImageView: UIImageView = { ()-> UIImageView in
-        let imageView = UIImageView()
-//        imageView.image = UIImage(systemName: "person.crop.square.fill")?.withTintColor(.white, renderingMode: .alwaysOriginal)
-        imageView.backgroundColor = .lightGray
-        return imageView
+    private lazy var profileImageView: UIView = { ()-> UIView in
+        let view = UIView()
+        view.backgroundColor = .darkGray
+        view.addSubview(intialLabel)
+        intialLabel.customCenterX(inView: view)
+        intialLabel.customCenterY(inView: view)
+        return view
     }()
     
     private lazy var fullNameLabel: UILabel = {() -> UILabel in

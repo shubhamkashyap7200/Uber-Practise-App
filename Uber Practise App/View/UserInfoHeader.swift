@@ -12,12 +12,23 @@ class UserInfoHeader: UIView {
     // MARK: - Properties
     private let user: User
 
-    private let profileImageView: UIImageView = { ()-> UIImageView in
-        let imageView = UIImageView()
-        imageView.backgroundColor = .lightGray
-        return imageView
+    private lazy var intialLabel: UILabel = { () -> UILabel in
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 42.0)
+        label.textColor = .white
+        label.text = user.firstIntial
+        return label
     }()
     
+    private lazy var profileImageView: UIView = { ()-> UIView in
+        let view = UIView()
+        view.backgroundColor = .darkGray
+        view.addSubview(intialLabel)
+        intialLabel.customCenterX(inView: view)
+        intialLabel.customCenterY(inView: view)
+        return view
+    }()
+
     private lazy var fullNameLabel: UILabel = {() -> UILabel in
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16.0)

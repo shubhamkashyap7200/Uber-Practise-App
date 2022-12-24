@@ -20,6 +20,7 @@ struct User {
     let uid: String
     var homeLocation: String?
     var workLocation: String?
+    var firstIntial: String { return String(fullname.prefix(1)) }
     
     // MARK: - Methods
     init(uid: String, dictionary: [String: Any]) {

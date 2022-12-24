@@ -186,6 +186,13 @@ extension HomeViewController{
                 Service.shared.fetchUserData(uid: driverUID) { (driver) in
                     self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: driver)
                 }
+            case .denied:
+                print("DEBUG:: Denied Trip")
+                self.shouldPresentLoadingView(false)
+                self.presentAlertController(withTitle: "Oops", withMessage: "It looks like we couldn't find you driver. Plese try again...")
+                self.clearTheMapAndRecenterItTheTheUserPosition()
+                self.cancelRide()
+
             case .driverArrived:
                 self.rideActionView.config = .driverArrived
             case .inProgress:
